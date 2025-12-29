@@ -9,7 +9,10 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  department?: string;
+  department: string;
+  status: 'Active' | 'Inactive';
+  joinedDate?: string;
+  lastLoginDate?: string;
 }
 
 export interface Idea {
@@ -53,8 +56,20 @@ export interface Vote {
 export interface Notification {
   notificationID: number;
   userID: number;
-  type: 'NewIdea' | 'ReviewDecision';
+  type: 'NewIdea' | 'ReviewDecision' | 'NewComment' | 'NewVote';
   message: string;
   status: 'Unread' | 'Read';
+  createdDate: string;
+  relatedIdeaID?: number;
+  relatedUserName?: string;
+}
+
+export interface Category {
+  categoryID: number;
+  name: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+  isActive: boolean;
   createdDate: string;
 }

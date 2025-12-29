@@ -1,2 +1,119 @@
-<p>dashboard works!</p>
-<h1>this is dashboard </h1>
+<div class="admin-dashboard">
+  <header class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">System Overview & Statistics</p>
+  </header>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <!-- Users Card -->
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <h3>Total Users</h3>
+        <div class="stat-number">{{ totalUsers }}</div>
+        <div class="stat-details">
+          <span>{{ totalAdmins }} Admins</span>
+          <span>{{ totalManagers }} Managers</span>
+          <span>{{ totalEmployees }} Employees</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ideas Card -->
+    <div class="stat-card">
+      <div class="stat-icon">💡</div>
+      <div class="stat-content">
+        <h3>Total Ideas</h3>
+        <div class="stat-number">{{ totalIdeas }}</div>
+        <div class="stat-details">
+          <span>{{ draftIdeas }} Draft</span>
+          <span>{{ underReviewIdeas }} In Review</span>
+          <span>{{ approvedIdeas }} Approved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Card -->
+    <div class="stat-card">
+      <div class="stat-icon">📁</div>
+      <div class="stat-content">
+        <h3>Categories</h3>
+        <div class="stat-number">{{ totalCategories }}</div>
+        <div class="stat-details">
+          <span>{{ activeCategories }} Active</span>
+          <span>{{ totalCategories - activeCategories }} Inactive</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Rate Card -->
+    <div class="stat-card highlight">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>Approval Rate</h3>
+        <div class="stat-number">{{ approvalRate }}%</div>
+        <div class="stat-details">
+          <span>{{ approvedIdeas }} of {{ totalIdeas }} ideas approved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-buttons">
+      <a routerLink="/admin/categories" class="action-btn primary">
+        📁 Manage Categories
+      </a>
+      <button class="action-btn secondary" disabled title="Coming soon">
+        👥 Manage Users
+      </button>
+      <button class="action-btn secondary" disabled title="Coming soon">
+        📊 Generate Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="recent-activity">
+    <div class="activity-section">
+      <h2>Recent Ideas</h2>
+      <div class="activity-list" *ngIf="recentIdeas.length > 0; else noIdeas">
+        <div *ngFor="let idea of recentIdeas" class="activity-item">
+          <div class="activity-icon">💡</div>
+          <div class="activity-content">
+            <div class="activity-title">{{ idea.title }}</div>
+            <div class="activity-meta">
+              <span [class]="getStatusClass(idea.status)">{{ idea.status }}</span>
+              <span class="activity-date">{{ idea.submittedDate | date: 'short' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noIdeas>
+        <p class="no-data">No ideas yet</p>
+      </ng-template>
+    </div>
+
+    <div class="activity-section">
+      <h2>Recent Users</h2>
+      <div class="activity-list" *ngIf="recentUsers.length > 0; else noUsers">
+        <div *ngFor="let user of recentUsers" class="activity-item">
+          <div class="activity-icon">👤</div>
+          <div class="activity-content">
+            <div class="activity-title">{{ user.name }}</div>
+            <div class="activity-meta">
+              <span [class]="getRoleClass(user.role)">{{ user.role }}</span>
+              <span class="activity-detail">{{ user.department }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noUsers>
+        <p class="no-data">No users yet</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

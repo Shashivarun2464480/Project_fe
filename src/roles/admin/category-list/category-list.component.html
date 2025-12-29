@@ -1,1 +1,84 @@
-<p>category-list works!</p>
+<div class="category-management">
+  <div class="header">
+    <h2>Category Management</h2>
+    <button class="btn btn-primary" (click)="openAddForm()">
+      + Add Category
+    </button>
+  </div>
+
+  <div class="category-table" *ngIf="categories.length > 0; else emptyState">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of categories">
+          <td>
+            <div class="category-name">
+              <span class="icon">{{ category.icon }}</span>
+              <span>{{ category.name }}</span>
+            </div>
+          </td>
+          <td>{{ category.description || "No description" }}</td>
+          <td>
+            <span
+              class="status-badge"
+              [class.active]="category.isActive"
+              [class.inactive]="!category.isActive"
+            >
+              {{ category.isActive ? "Active" : "Inactive" }}
+            </span>
+          </td>
+          <td class="actions">
+            <button
+              class="btn btn-sm btn-secondary"
+              (click)="openEditForm(category)"
+              title="Edit category"
+            >
+              ✏️ Edit
+            </button>
+            <button
+              class="btn btn-sm"
+              [class.btn-warning]="category.isActive"
+              [class.btn-success]="!category.isActive"
+              (click)="toggleStatus(category)"
+              title="Toggle status"
+            >
+              {{ category.isActive ? "🔒 Deactivate" : "✅ Activate" }}
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="deleteCategory(category)"
+              title="Delete category"
+            >
+              🗑️ Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <p>📋 No categories found</p>
+      <p class="subtitle">Click "Add Category" to create your first category</p>
+    </div>
+  </ng-template>
+
+  <!-- Category Form Modal -->
+  <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <app-category-form
+        [category]="editingCategory"
+        (saved)="onFormSaved()"
+        (cancelled)="closeForm()"
+      ></app-category-form>
+    </div>
+  </div>
+</div>

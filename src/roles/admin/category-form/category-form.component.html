@@ -1,1 +1,91 @@
-<p>category-form works!</p>
+<div class="category-form">
+  <div class="form-header">
+    <h3>{{ category ? 'Edit Category' : 'Add New Category' }}</h3>
+    <button class="close-btn" (click)="onCancel()" type="button">×</button>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Category Name *</label>
+      <input
+        type="text"
+        id="name"
+        [(ngModel)]="formData.name"
+        name="name"
+        placeholder="e.g., Process Improvement"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        [(ngModel)]="formData.description"
+        name="description"
+        rows="3"
+        placeholder="Describe this category..."
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="icon">Icon</label>
+        <div class="icon-selector">
+          <div class="selected-icon">{{ formData.icon }}</div>
+          <div class="icon-grid">
+            <button
+              *ngFor="let icon of availableIcons"
+              type="button"
+              class="icon-option"
+              [class.selected]="formData.icon === icon"
+              (click)="formData.icon = icon"
+            >
+              {{ icon }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="color">Color</label>
+        <div class="color-selector">
+          <div
+            class="selected-color"
+            [style.background-color]="formData.color"
+          ></div>
+          <div class="color-grid">
+            <button
+              *ngFor="let color of availableColors"
+              type="button"
+              class="color-option"
+              [class.selected]="formData.color === color"
+              [style.background-color]="color"
+              (click)="formData.color = color"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          [(ngModel)]="formData.isActive"
+          name="isActive"
+        />
+        <span>Active (visible in dropdowns)</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary">
+        {{ category ? 'Update' : 'Create' }} Category
+      </button>
+    </div>
+  </form>
+</div>
