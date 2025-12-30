@@ -1,3 +1,5 @@
+import e from "express";
+
 export enum UserRole {
   ADMIN = 'admin',
   EMPLOYEE = 'employee',
@@ -9,9 +11,9 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  department: string;
-  status: 'Active' | 'Inactive';
-  joinedDate?: string;
+  department?: string;
+  status:'Active' | 'Inactive';
+  joinedDate: string;
   lastLoginDate?: string;
 }
 
@@ -56,7 +58,7 @@ export interface Vote {
 export interface Notification {
   notificationID: number;
   userID: number;
-  type: 'NewIdea' | 'ReviewDecision' | 'NewComment' | 'NewVote';
+  type: 'NewIdea' | 'ReviewDecision' | 'NewComment' | 'NewVote'|'NewComment'
   message: string;
   status: 'Unread' | 'Read';
   createdDate: string;
@@ -72,4 +74,18 @@ export interface Category {
   color?: string;
   isActive: boolean;
   createdDate: string;
+  relatedIdeaID?: number;
+  relatedUserName?: string;
+ 
 }
+
+export interface Category {
+  categoryID: number;
+  name: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+  isActive: boolean;
+  createdDate: string;
+}
+

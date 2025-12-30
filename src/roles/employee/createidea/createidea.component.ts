@@ -9,7 +9,9 @@ import {
 import { RouterModule, Router } from '@angular/router';
 import { IdeaService } from '../../../services/idea.service';
 import { AuthService } from '../../../services/auth.service';
-import { UserRole } from '../../../models/model';
+import { UserRole ,Category} from '../../../models/model';
+import { CategoryService } from '../../../services/category.service';
+
 
 @Component({
   selector: 'app-createidea',
@@ -20,7 +22,7 @@ import { UserRole } from '../../../models/model';
 })
 export class CreateideaComponent implements OnInit {
   form!: FormGroup;
-
+  categories: Category[] = [];
   currentRole: UserRole | null = null;
   currentUserId = 0;
 
@@ -28,12 +30,13 @@ export class CreateideaComponent implements OnInit {
     private fb: FormBuilder,
     private ideaService: IdeaService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private categoryService: CategoryService
   ) {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(120)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      category: [''],
+      categoryID: ['',Validators.required],
       status: ['UnderReview'],
     });
   }
@@ -44,14 +47,20 @@ export class CreateideaComponent implements OnInit {
       this.currentRole = user.role;
       this.currentUserId = user.userID;
     }
+    // Load active categories
+this.categories = this.categoryService.getActiveCategories();
   }
 
   submit() {
     if (this.form.invalid) return;
+    const selectedCategory = this.categories.find(
+  (c) => c.categoryID === Number(this.form.value.categoryID)
+);
 
     const payload: any = {
       title: this.form.value.title,
       description: this.form.value.description,
+      categoryID: Number(this.form.value.categoryID),
       category: this.form.value.category,
       submittedByUserID: this.currentUserId,
       submittedDate: new Date().toISOString(),
