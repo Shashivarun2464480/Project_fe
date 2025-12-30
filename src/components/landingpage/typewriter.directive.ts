@@ -52,7 +52,7 @@ export class TypewriterDirective implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Accessibility hint for screen readers:
+  
     this.renderer.setAttribute(this.el.nativeElement, 'aria-live', 'polite');
 
     if (!this.words.length) this.words = ['Transform'];
@@ -62,7 +62,7 @@ export class TypewriterDirective implements AfterViewInit, OnDestroy {
     this.typing = true;
     this.wordIndex = 0;
 
-    // On server, do nothing (render static). On browser, start animation.
+
     if (!this.isBrowser) return;
 
     if (this.startOnVisible && typeof IntersectionObserver !== 'undefined') {
@@ -81,7 +81,7 @@ export class TypewriterDirective implements AfterViewInit, OnDestroy {
     }
   }
 
-  /** A safe rAF wrapper that falls back to setTimeout when rAF is unavailable. */
+
   private schedule(cb: (ts: number) => void): number {
     const raf = typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'
       ? window.requestAnimationFrame.bind(window)
@@ -90,13 +90,13 @@ export class TypewriterDirective implements AfterViewInit, OnDestroy {
     if (raf) {
       return raf(cb);
     }
-    // Fallback for SSR / non-browser environments
+
     return setTimeout(() => cb(typeof performance !== 'undefined' ? performance.now() : Date.now()), 16) as unknown as number;
   }
 
   private cancelScheduled(id: number | null): void {
     if (!id) return;
-    // Try cancelAnimationFrame if present, else clearTimeout
+
     const cancel = typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function'
       ? window.cancelAnimationFrame.bind(window)
       : undefined;
@@ -156,7 +156,6 @@ export class TypewriterDirective implements AfterViewInit, OnDestroy {
         }
       };
 
-      // Kick-off: schedule immediately (0ms), using the safe scheduler
       this.rafId = this.schedule(() => tick(0, step));
     });
   }
