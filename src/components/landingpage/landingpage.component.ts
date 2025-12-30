@@ -16,48 +16,53 @@ export class LandingpageComponent implements OnInit {
   roles = [
     {
       title: 'Employee',
-      icon: '👨‍💻',
+      icon: '/Employee.svg',
       description:
         'Submit innovative ideas and collaborate with team members to improve organizational processes.',
       features: [
-        '✓ Submit your ideas',
-        '✓ Vote on other ideas',
-        '✓ Discuss and collaborate',
-        '✓ Track idea progress',
+        ' Submit your ideas',
+        ' Vote on other ideas',
+        ' Discuss and collaborate',
+        ' Track idea progress',
       ],
       cta: 'Start as Employee',
       route: '/signup',
       color: '#3b82f6',
+      decorated: false
     },
     {
       title: 'Manager',
-      icon: '👨‍💼',
+      icon: '/Manager.svg',
+      bgv:'/light-bulb.svg',
       description:
         'Review, manage, and track ideas from your team members. Make decisions and drive innovation.',
       features: [
-        '✓ Review all ideas',
-        '✓ Provide feedback',
-        '✓ Approve/reject ideas',
-        '✓ Team management',
+        ' Review all ideas',
+        ' Provide feedback',
+        ' Approve/reject ideas',
+        ' Team management',
       ],
       cta: 'Manage as Manager',
       route: '/signup',
-      color: '#8b5cf6',
+      color: '#3b82f6',
+      decorated: true
     },
     {
       title: 'Administrator',
-      icon: '👨‍💼',
+      icon: '/Admin.svg',
+
       description:
-        'Have full control over the system. Manage users, categories, and system-wide settings.',
+        'Have full control over the entire system. Manage users, categories, and system‑wide settings.',
       features: [
-        '✓ Full system access',
-        '✓ User management',
-        '✓ Custom categories',
-        '✓ Advanced analytics',
+        ' Full system access',
+        ' User management',
+        ' Custom categories',
+        ' Advanced analytics',
       ],
       cta: 'Manage as Admin',
       route: '/signup',
-      color: '#ec4899',
+      color: '#3b82f6',
+      decorated: false
     },
   ];
   constructor(private router: Router) {}
