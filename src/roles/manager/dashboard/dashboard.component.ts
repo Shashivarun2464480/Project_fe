@@ -13,12 +13,10 @@ import { Idea } from '../../../models/model';
 })
 export class DashboardComponent implements OnInit {
   ideas: Idea[] = [];
-
   constructor(private ideaService: IdeaService) { }
 
   ngOnInit(): void {
     this.ideaService.getAllIdeas().subscribe((list) => (this.ideas = list));
   }
-
 
 }
