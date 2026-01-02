@@ -1,4 +1,3 @@
-import e from "express";
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -27,7 +26,7 @@ export interface Idea {
   status: 'Draft' | 'UnderReview' | 'Approved';
   category?: string;
   upvotes?: number;
-  downvotes?: number;
+  downvotes?: number;  
 }
 export interface Review {
   reviewID?: number;
