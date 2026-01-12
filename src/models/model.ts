@@ -57,7 +57,7 @@ export interface Vote {
 export interface Notification {
   notificationID: number;
   userID: number;
-  type: 'NewIdea' | 'ReviewDecision' | 'NewComment' | 'NewVote'|'NewComment'
+  type: 'NewIdea' | 'ReviewDecision' | 'NewComment';
   message: string;
   status: 'Unread' | 'Read';
   createdDate: string;
