@@ -61,7 +61,7 @@
             >
               <option value="" disabled selected>Select a category...</option>
               <option *ngFor="let cat of categories" [value]="cat.categoryID">
-                {{ cat.icon }} {{ cat.name }}
+                {{ cat.name }}
               </option>
             </select>
              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">

@@ -20,44 +20,8 @@ export class CategoryFormComponent implements OnInit {
   formData = {
     name: '',
     description: '',
-    icon: '📌',
-    color: '#6B7280',
     isActive: true,
   };
-
-  availableIcons = [
-    '🔄',
-    '💡',
-    '👥',
-    '💻',
-    '💰',
-    '🎯',
-    '📢',
-    '⚙️',
-    '📌',
-    '🚀',
-    '📊',
-    '🎨',
-    '🔧',
-    '📝',
-    '⭐',
-    '🏆',
-  ];
-
-  availableColors = [
-    '#3B82F6',
-    '#F59E0B',
-    '#10B981',
-    '#8B5CF6',
-    '#EF4444',
-    '#EC4899',
-    '#F97316',
-    '#6366F1',
-    '#6B7280',
-    '#14B8A6',
-    '#F43F5E',
-    '#84CC16',
-  ];
 
   constructor(private categoryService: CategoryService) { }
 
@@ -66,8 +30,6 @@ export class CategoryFormComponent implements OnInit {
       this.formData = {
         name: this.category.name,
         description: this.category.description || '',
-        icon: this.category.icon || '📌',
-        color: this.category.color || '#6B7280',
         isActive: this.category.isActive,
       };
     }

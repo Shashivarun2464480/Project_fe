@@ -41,10 +41,16 @@
               <span class="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">{{ selected.submittedByUserID }}</span>
             </div>
             <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-2">
                <span class="font-medium text-gray-900">Votes:</span>
-               <span class="text-green-600 font-bold">👍 {{ selected.upvotes || 0 }}</span>
-               <span class="text-red-600 font-bold ml-1">👎 {{ selected.downvotes || 0 }}</span>
+               <span class="text-green-600 font-bold"> 
+                <div>
+                  <img src="Like.svg" alt="Like Icon" class="w-4 h-4" />
+                </div> {{ selected.upvotes || 0 }}</span>
+               <span class="text-red-600 font-bold ml-1">
+                <div>
+                  <img src="disLike.svg" alt="disLike Icon" class="w-4 h-4" />
+                </div> {{ selected.downvotes || 0 }}</span>
             </div>
           </div>
         </div>

@@ -56,11 +56,15 @@
           </div>
           
           <div class="flex items-center gap-4 mt-4">
-            <div class="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-md text-sm font-semibold">
-              <span>👍</span> {{ idea.upvotes || 0 }}
+            <div class="flex items-center gap-2 text-green-600 bg-green-50 px-2 py-1 rounded-md text-sm font-semibold">
+              <div>
+                <img src="Like.svg" alt="Like Icon" class="w-4 h-4" />
+              </div> {{ idea.upvotes || 0 }}
             </div>
-             <div class="flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-md text-sm font-semibold">
-              <span>👎</span> {{ idea.downvotes || 0 }}
+             <div class="flex items-center gap-2 text-red-600 bg-red-50 px-2 py-1 rounded-md text-sm font-semibold">
+              <div>
+                <img src="disLike.svg" alt="disLike Icon" class="w-4 h-4" />
+              </div> {{ idea.downvotes || 0 }}
             </div>
           </div>
         </div>
