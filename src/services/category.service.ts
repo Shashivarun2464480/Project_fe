@@ -64,8 +64,6 @@ export class CategoryService {
       categoryID: nextId,
       name: partial.name || 'Untitled Category',
       description: partial.description || '',
-      icon: partial.icon || '📌',
-      color: partial.color || '#6B7280',
       isActive: partial.isActive !== undefined ? partial.isActive : true,
       createdDate: new Date().toISOString(),
     };

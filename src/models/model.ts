@@ -26,7 +26,7 @@ export interface Idea {
   status: 'Rejected' | 'UnderReview' | 'Approved';
   category?: string;
   upvotes?: number;
-  downvotes?: number;  
+  downvotes?: number;
 }
 export interface Review {
   reviewID?: number;
@@ -69,8 +69,6 @@ export interface Category {
   categoryID: number;
   name: string;
   description?: string;
-  icon?: string;
-  color?: string;
   isActive: boolean;
   createdDate: string;
   relatedIdeaID?: number;
@@ -78,13 +76,4 @@ export interface Category {
 
 }
 
-export interface Category {
-  categoryID: number;
-  name: string;
-  description?: string;
-  icon?: string;
-  color?: string;
-  isActive: boolean;
-  createdDate: string;
-}
 
