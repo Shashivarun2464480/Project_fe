@@ -36,8 +36,6 @@ export class UserService {
         role: UserRole.ADMIN,
         department: 'Executive',
         status: 'Active',
-        joinedDate: '2023-01-01T09:00:00.000Z',
-        lastLoginDate: new Date().toISOString(),
       },
       {
         userID: 2,
@@ -46,7 +44,6 @@ export class UserService {
         role: UserRole.MANAGER,
         department: 'Engineering',
         status: 'Active',
-        joinedDate: '2023-02-15T10:00:00.000Z',
       },
       {
         userID: 3,
@@ -55,7 +52,6 @@ export class UserService {
         role: UserRole.MANAGER,
         department: 'HR',
         status: 'Active',
-        joinedDate: '2023-03-01T09:30:00.000Z',
       },
       {
         userID: 4,
@@ -64,7 +60,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Engineering',
         status: 'Active',
-        joinedDate: '2023-04-10T08:45:00.000Z',
       },
       {
         userID: 5,
@@ -73,7 +68,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Product',
         status: 'Active',
-        joinedDate: '2023-05-20T11:15:00.000Z',
       },
       {
         userID: 6,
@@ -82,7 +76,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Sales',
         status: 'Active',
-        joinedDate: '2023-06-01T09:00:00.000Z',
       },
       {
         userID: 7,
@@ -91,7 +84,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Marketing',
         status: 'Active',
-        joinedDate: '2023-06-15T14:20:00.000Z',
       },
       {
         userID: 8,
@@ -100,7 +92,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Operations',
         status: 'Active',
-        joinedDate: '2023-07-01T08:30:00.000Z',
       },
       {
         userID: 9,
@@ -109,7 +100,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Customer Support',
         status: 'Active',
-        joinedDate: '2023-08-01T10:00:00.000Z',
       },
       {
         userID: 10,
@@ -118,7 +108,6 @@ export class UserService {
         role: UserRole.EMPLOYEE,
         department: 'Finance',
         status: 'Active',
-        joinedDate: '2023-08-15T13:45:00.000Z',
       },
     ];
 
@@ -185,8 +174,6 @@ export class UserService {
       role: partial.role || UserRole.EMPLOYEE,
       department: partial.department || 'Other',
       status: partial.status || 'Active',
-      joinedDate: partial.joinedDate || new Date().toISOString(),
-      lastLoginDate: partial.lastLoginDate,
     };
 
     users.push(newUser);
@@ -220,9 +207,6 @@ export class UserService {
     }
   }
 
-  updateLastLogin(id: number): void {
-    this.updateUser(id, { lastLoginDate: new Date().toISOString() });
-  }
 
   // Check if email already exists (for validation)
   emailExists(email: string, excludeUserID?: number): boolean {

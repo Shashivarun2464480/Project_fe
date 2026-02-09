@@ -51,14 +51,6 @@ export class DashboardComponent implements OnInit {
       this.totalManagers = users.filter((u) => u.role === UserRole.MANAGER).length;
       this.totalEmployees = users.filter((u) => u.role === UserRole.EMPLOYEE).length;
 
-      // Get 5 most recent users
-      this.recentUsers = users
-        .sort((a, b) => {
-          const dateA = new Date(a.joinedDate || 0).getTime();
-          const dateB = new Date(b.joinedDate || 0).getTime();
-          return dateB - dateA;
-        })
-        .slice(0, 5);
     });
 
     // Load ideas

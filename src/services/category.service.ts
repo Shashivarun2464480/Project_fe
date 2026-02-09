@@ -1,45 +1,36 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Category } from '../models/model';
-
-const CATEGORIES_KEY = 'categories';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private categories$ = new BehaviorSubject<Category[]>(this.readCategories());
+  private categories$ = new BehaviorSubject<Category[]>([]);
+  private apiUrl = 'https://localhost:7175/api/Admin/categories';
 
-  constructor() {
-    this.seedDefaultCategories();
+  constructor(private http: HttpClient) {
+    this.loadCategories();
   }
 
-  private safeRead<T>(key: string): T[] {
-    try {
-      if (
-        typeof window !== 'undefined' &&
-        window.localStorage &&
-        typeof window.localStorage.getItem === 'function'
-      ) {
-        const raw = window.localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : [];
-      }
-    } catch {}
-    return [];
-  }
-
-  private safeWrite<T>(key: string, data: T[]) {
-    try {
-      if (
-        typeof window !== 'undefined' &&
-        window.localStorage &&
-        typeof window.localStorage.setItem === 'function'
-      ) {
-        window.localStorage.setItem(key, JSON.stringify(data));
-      }
-    } catch {}
-  }
-
-  private readCategories(): Category[] {
-    return this.safeRead<Category>(CATEGORIES_KEY);
+  private loadCategories(): void {
+    this.http.get<any[]>(this.apiUrl).subscribe({
+      next: (categories) => {
+        // Map backend response to frontend Category model
+        const mappedCategories = categories.map((cat) => ({
+          categoryID: cat.categoryId,
+          name: cat.name,
+          description: cat.description || '',
+          isActive: cat.isActive,
+          createdDate: '',
+        }));
+        this.categories$.next(mappedCategories);
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.categories$.next([]);
+      },
+    });
   }
 
   getAllCategories(): Observable<Category[]> {
@@ -50,99 +41,79 @@ export class CategoryService {
     return this.categories$.value.filter((c) => c.isActive);
   }
 
-  getCategoryById(id: number): Category | undefined {
+  getCategoryById(id: number | string): Category | undefined {
     return this.categories$.value.find((c) => c.categoryID === id);
   }
 
-  createCategory(partial: Partial<Category>): Category {
-    const categories = this.categories$.value.slice();
-    const nextId = categories.length
-      ? Math.max(...categories.map((c) => c.categoryID)) + 1
-      : 1;
-
-    const newCategory: Category = {
-      categoryID: nextId,
+  createCategory(partial: Partial<Category>): Observable<Category> {
+    const payload = {
       name: partial.name || 'Untitled Category',
       description: partial.description || '',
       isActive: partial.isActive !== undefined ? partial.isActive : true,
-      createdDate: new Date().toISOString(),
     };
 
-    categories.push(newCategory);
-    this.categories$.next(categories);
-    this.safeWrite<Category>(CATEGORIES_KEY, categories);
-    return newCategory;
-  }
-
-  updateCategory(id: number, updates: Partial<Category>): void {
-    const categories = this.categories$.value.slice();
-    const idx = categories.findIndex((c) => c.categoryID === id);
-
-    if (idx >= 0) {
-      categories[idx] = { ...categories[idx], ...updates };
-      this.categories$.next(categories);
-      this.safeWrite<Category>(CATEGORIES_KEY, categories);
-    }
-  }
-
-  deleteCategory(id: number): void {
-    const categories = this.categories$.value.filter(
-      (c) => c.categoryID !== id
+    return this.http.post<any>(this.apiUrl, payload).pipe(
+      tap((response: any) => {
+        const newCategory: Category = {
+          categoryID: response.categoryId,
+          name: response.name,
+          description: response.description || '',
+          isActive: response.isActive,
+        };
+        const categories = [...this.categories$.value, newCategory];
+        this.categories$.next(categories);
+      }),
     );
-    this.categories$.next(categories);
-    this.safeWrite<Category>(CATEGORIES_KEY, categories);
   }
 
-  toggleCategoryStatus(id: number): void {
+  updateCategory(
+    id: number | string,
+    updates: Partial<Category>,
+  ): Observable<any> {
+    const payload = {
+      name: updates.name,
+      description: updates.description,
+      isActive: updates.isActive,
+    };
+
+    return this.http.put(`${this.apiUrl}/${id}`, payload).pipe(
+      tap(() => {
+        const categories = this.categories$.value.map((c) =>
+          c.categoryID === id ? { ...c, ...updates } : c,
+        );
+        this.categories$.next(categories);
+      }),
+    );
+  }
+
+  deleteCategory(id: number | string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      tap(() => {
+        const categories = this.categories$.value.filter(
+          (c) => c.categoryID !== id,
+        );
+        this.categories$.next(categories);
+      }),
+    );
+  }
+  toggleCategoryStatus(id: number | string): void {
     const category = this.getCategoryById(id);
     if (category) {
-      this.updateCategory(id, { isActive: !category.isActive });
-    }
-  }
+      const updatedData = {
+        name: category.name,
+        description: category.description,
+        isActive: !category.isActive,
+      };
 
-  seedDefaultCategories(): void {
-    const existing = this.categories$.value;
-    if (existing.length === 0) {
-      const defaultCategories = [
-        {
-          name: 'Process Improvement',
-          description: 'Ideas to improve existing processes and workflows',
+      this.updateCategory(id, updatedData).subscribe({
+        next: () => {
+          console.log('Category status toggled successfully');
         },
-        {
-          name: 'Product Innovation',
-          description: 'New product ideas and innovative solutions',
+        error: (error) => {
+          console.error('Error toggling category status:', error);
+          alert('Failed to toggle category status. Please try again.');
         },
-        {
-          name: 'Customer Experience',
-          description: 'Enhance customer satisfaction and engagement',
-        },
-        {
-          name: 'Technology',
-          description: 'Technology innovations and digital transformation',
-        },
-        {
-          name: 'Cost Reduction',
-          description: 'Ideas to reduce costs and optimize resources',
-        },
-        {
-          name: 'HR & Culture',
-          description: 'Human resources and workplace culture improvements',
-        },
-        {
-          name: 'Marketing',
-          description: 'Marketing strategies and promotional ideas',
-        },
-        {
-          name: 'Operations',
-          description: 'Operational efficiency and process optimization',
-        },
-        {
-          name: 'Other',
-          description: "Miscellaneous ideas that don't fit other categories",
-        },
-      ];
-
-      defaultCategories.forEach((cat) => this.createCategory(cat));
+      });
     }
   }
 }

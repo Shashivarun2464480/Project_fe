@@ -47,10 +47,18 @@ export class CategoryListComponent implements OnInit {
   deleteCategory(category: Category): void {
     if (
       confirm(
-        `Are you sure you want to delete "${category.name}"? This action cannot be undone.`
+        `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
       )
     ) {
-      this.categoryService.deleteCategory(category.categoryID);
+      this.categoryService.deleteCategory(category.categoryID).subscribe({
+        next: () => {
+          // Category list will be updated automatically via the service
+        },
+        error: (error) => {
+          console.error('Error deleting category:', error);
+          alert('Failed to delete category. Please try again.');
+        },
+      });
     }
   }
 

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Category } from '../../../models/model';
 import { CategoryService } from '../../../services/category.service';
 
-
 @Component({
   selector: 'app-category-form',
   imports: [CommonModule, FormsModule],
@@ -23,7 +22,7 @@ export class CategoryFormComponent implements OnInit {
     isActive: true,
   };
 
-  constructor(private categoryService: CategoryService) { }
+  constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
     if (this.category) {
@@ -43,13 +42,35 @@ export class CategoryFormComponent implements OnInit {
 
     if (this.category) {
       // Update existing category
-      this.categoryService.updateCategory(this.category.categoryID, this.formData);
+      this.categoryService
+        .updateCategory(this.category.categoryID, this.formData)
+        .subscribe({
+          next: () => {
+            this.saved.emit();
+          },
+          error: (error) => {
+            console.error('Error updating category:', error);
+            alert('Failed to update category. Please try again.');
+          },
+        });
     } else {
       // Create new category
-      this.categoryService.createCategory(this.formData);
+      this.categoryService.createCategory(this.formData).subscribe({
+        next: () => {
+          // alert('Category created successfully!');
+          this.saved.emit();
+        },
+        error: (error) => {
+          console.error('Error creating category:', error);
+          const errorMsg =
+            error.error?.message ||
+            error.error ||
+            error.message ||
+            'Failed to create category. Please try again.';
+          alert(`Error: ${errorMsg}`);
+        },
+      });
     }
-
-    this.saved.emit();
   }
 
   onCancel(): void {

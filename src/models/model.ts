@@ -1,4 +1,3 @@
-
 export enum UserRole {
   ADMIN = 'admin',
   EMPLOYEE = 'employee',
@@ -11,9 +10,7 @@ export interface User {
   email: string;
   role: UserRole;
   department?: string;
-  status:'Active' | 'Inactive';
-  joinedDate: string;
-  lastLoginDate?: string;
+  status: 'Active' | 'Inactive';
 }
 
 export interface Idea {
@@ -66,14 +63,8 @@ export interface Notification {
 }
 
 export interface Category {
-  categoryID: number;
+  categoryID: number | string;
   name: string;
   description?: string;
   isActive: boolean;
-  createdDate: string;
-  relatedIdeaID?: number;
-  relatedUserName?: string;
-
 }
-
-

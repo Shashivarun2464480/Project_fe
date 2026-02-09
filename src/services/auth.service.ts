@@ -144,9 +144,7 @@ export class AuthService {
                 'employee',
             ),
             status: (payload.status || 'Active') as 'Active' | 'Inactive',
-            joinedDate: new Date().toISOString(),
             department: payload.department,
-            lastLoginDate: new Date().toISOString(),
           };
 
           // Store user in service
