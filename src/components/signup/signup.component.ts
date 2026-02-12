@@ -83,10 +83,29 @@ export class SignupComponent {
       },
       error: (error) => {
         this.loading = false;
-        const errorMessage =
-          error.error || 'Registration failed. Please try again.';
-        alert(errorMessage);
         console.error('Registration error:', error);
+
+        let errorMessage = 'Registration failed. Please try again.';
+
+        // Handle different error types
+        if (error.status === 0) {
+          errorMessage =
+            'Cannot connect to server. Please check:\n' +
+            '1. Backend is running at https://localhost:7175\n' +
+            '2. SSL certificate is trusted\n' +
+            '3. CORS is configured on backend\n' +
+            '4. Network connection is active';
+        } else if (error.status === 400) {
+          errorMessage =
+            error.error || 'Invalid input. Please check your details.';
+        } else if (error.status === 409) {
+          errorMessage =
+            'Email already exists. Please use a different email or sign in.';
+        } else if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        }
+
+        alert(errorMessage);
       },
     });
   }

@@ -1,4 +1,3 @@
-
 export enum UserRole {
   ADMIN = 'admin',
   EMPLOYEE = 'employee',
@@ -20,8 +19,9 @@ export interface Idea {
   description: string;
   categoryID: number;
   userID: number;
+  authorName?: string;
   submittedDate: string;
-  status : 'Draft' | 'UnderReview' | 'Approved';
+  status: 'Draft' | 'UnderReview' | 'Approved';
   category?: string;
   upvotes?: number;
   downvotes?: number;
@@ -39,7 +39,7 @@ export interface Review {
 
 export interface Comment {
   commentID: number;
-  ideaID: number;
+  ideaID: number | string;
   userID: number;
   text: string;
   createdDate: string;

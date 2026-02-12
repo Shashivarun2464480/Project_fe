@@ -67,30 +67,104 @@ export class MyIdeas implements OnInit {
 
   selectIdea(idea: Idea) {
     this.selected = idea;
-    this.comments = this.ideaService.getCommentsForIdea(idea.ideaID);
-    this.reviews = this.ideaService.getReviewsForIdea(idea.ideaID);
+    // Load comments from backend
+    this.ideaService.getCommentsForIdea(idea.ideaID).subscribe({
+      next: (comments) => {
+        this.comments = comments;
+      },
+      error: (error) => {
+        console.error('Error loading comments:', error);
+        this.comments = [];
+      },
+    });
+    this.ideaService.getReviewsForIdea(idea.ideaID).subscribe({
+      next: (reviews) => {
+        this.reviews = reviews;
+      },
+      error: (error) => {
+        console.error('Error loading reviews:', error);
+        this.reviews = [];
+      },
+    });
   }
 
   addComment() {
     if (!this.selected || !this.currentUser || !this.newComment.trim()) return;
-    this.ideaService.addComment({
-      ideaID: this.selected.ideaID,
-      userID: this.currentUser.userID,
-      text: this.newComment.trim(),
-      createdDate: new Date().toISOString(),
-      userName: this.currentUser.name,
-    });
-    this.newComment = '';
-    this.comments = this.ideaService.getCommentsForIdea(this.selected.ideaID);
+
+    this.ideaService
+      .addComment({
+        ideaID: this.selected.ideaID,
+        userID: this.currentUser.userID,
+        text: this.newComment.trim(),
+        userName: this.currentUser.name,
+      })
+      .subscribe({
+        next: (comment) => {
+          this.newComment = '';
+          // Reload comments
+          this.ideaService.getCommentsForIdea(this.selected!.ideaID).subscribe({
+            next: (comments) => {
+              this.comments = comments;
+            },
+          });
+        },
+        error: (error) => {
+          console.error('Error adding comment:', error);
+          alert('Failed to add comment. Please try again.');
+        },
+      });
   }
 
   upvote(idea: Idea) {
     if (!this.currentUser) return;
-    this.ideaService.vote(idea.ideaID, this.currentUser.userID, 'Upvote');
+
+    this.ideaService.upvoteIdea(idea.ideaID).subscribe({
+      next: (response) => {
+        console.log('Upvoted successfully');
+        // Reload my ideas to get updated vote counts
+        this.loadMyIdeas();
+      },
+      error: (error) => {
+        console.error('Error upvoting:', error);
+        const errorMsg =
+          error.error?.message || error.error || 'Failed to upvote';
+        alert(errorMsg);
+      },
+    });
   }
 
   downvote(idea: Idea) {
     if (!this.currentUser) return;
-    this.ideaService.vote(idea.ideaID, this.currentUser.userID, 'Downvote');
+
+    // Prompt for comment (mandatory for downvote)
+    const comment = prompt(
+      'Please provide a reason for your downvote (mandatory):',
+    );
+
+    if (comment === null) {
+      // User cancelled
+      return;
+    }
+
+    if (!comment || comment.trim() === '') {
+      alert(
+        'Comment is mandatory when downvoting. Please provide a reason for your downvote.',
+      );
+      return;
+    }
+
+    this.ideaService.downvoteIdea(idea.ideaID, comment.trim()).subscribe({
+      next: (response) => {
+        console.log('Downvoted successfully with comment');
+        // Reload my ideas to get updated vote counts
+        this.loadMyIdeas();
+      },
+      error: (error) => {
+        console.error('Error downvoting:', error);
+        const errorMsg =
+          error.error?.message || error.error || 'Failed to downvote';
+        alert(errorMsg);
+      },
+    });
   }
 }

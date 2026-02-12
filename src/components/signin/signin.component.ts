@@ -64,12 +64,32 @@ export class SigninComponent {
       },
       error: (error) => {
         this.loading = false;
-        const errorMessage =
-          error.error?.message ||
-          error.error ||
-          'Invalid credentials. Please try again.';
-        alert(errorMessage);
         console.error('Login error:', error);
+
+        let errorMessage = 'Login failed. Please try again.';
+
+        // Handle different error types
+        if (error.status === 0) {
+          errorMessage =
+            'Cannot connect to server. Please check:\n' +
+            '1. Backend is running at https://localhost:7175\n' +
+            '2. SSL certificate is trusted\n' +
+            '3. CORS is configured on backend\n' +
+            '4. Network connection is active';
+        } else if (error.status === 401) {
+          errorMessage = 'Invalid email or password. Please try again.';
+        } else if (error.status === 400) {
+          errorMessage =
+            error.error?.message ||
+            error.error ||
+            'Invalid request. Please check your input.';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        }
+
+        alert(errorMessage);
       },
     });
   }

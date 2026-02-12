@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User, UserRole } from '../models/model';
-
-const USERS_KEY = 'users';
+import { HttpClient } from '@angular/common/http';
+import { tap, map } from 'rxjs/operators';
 
 export const DEPARTMENTS = [
   'Engineering',
@@ -17,201 +17,282 @@ export const DEPARTMENTS = [
   'Other',
 ];
 
+export interface UserStatistics {
+  totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
+  roleBreakdown: {
+    employees: number;
+    managers: number;
+    admins: number;
+  };
+}
+
+export interface UserDetails extends User {
+  ideasSubmitted?: number;
+  commentsPosted?: number;
+  votesCasted?: number;
+  reviewsSubmitted?: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private users$ = new BehaviorSubject<User[]>(this.readUsers());
+  private users$ = new BehaviorSubject<User[]>([]);
+  private apiUrl = 'https://localhost:7175/api/usermanagement';
 
-  constructor() {
-    if (this.users$.value.length === 0) {
-      this.seedUsers();
-    }
-  }
+  constructor(private http: HttpClient) {}
 
-  private seedUsers() {
-    const dummyUsers: User[] = [
-      {
-        userID: 1,
-        name: 'Admin User',
-        email: 'admin@company.com',
-        role: UserRole.ADMIN,
-        department: 'Executive',
-        status: 'Active',
-      },
-      {
-        userID: 2,
-        name: 'John Manager',
-        email: 'john.manager@company.com',
-        role: UserRole.MANAGER,
-        department: 'Engineering',
-        status: 'Active',
-      },
-      {
-        userID: 3,
-        name: 'Sarah HR',
-        email: 'sarah.hr@company.com',
-        role: UserRole.MANAGER,
-        department: 'HR',
-        status: 'Active',
-      },
-      {
-        userID: 4,
-        name: 'Alice Developer',
-        email: 'alice.dev@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Engineering',
-        status: 'Active',
-      },
-      {
-        userID: 5,
-        name: 'Bob Designer',
-        email: 'bob.design@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Product',
-        status: 'Active',
-      },
-      {
-        userID: 6,
-        name: 'Charlie Sales',
-        email: 'charlie.sales@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Sales',
-        status: 'Active',
-      },
-      {
-        userID: 7,
-        name: 'Diana Marketing',
-        email: 'diana.mkt@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Marketing',
-        status: 'Active',
-      },
-      {
-        userID: 8,
-        name: 'Evan Ops',
-        email: 'evan.ops@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Operations',
-        status: 'Active',
-      },
-      {
-        userID: 9,
-        name: 'Fiona Support',
-        email: 'fiona.support@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Customer Support',
-        status: 'Active',
-      },
-      {
-        userID: 10,
-        name: 'George Finance',
-        email: 'george.finance@company.com',
-        role: UserRole.EMPLOYEE,
-        department: 'Finance',
-        status: 'Active',
-      },
-    ];
+  // Backend API Methods
 
-    this.users$.next(dummyUsers);
-    this.safeWrite<User>(USERS_KEY, dummyUsers);
-  }
-
-  private safeRead<T>(key: string): T[] {
-    try {
-      if (
-        typeof window !== 'undefined' &&
-        window.localStorage &&
-        typeof window.localStorage.getItem === 'function'
-      ) {
-        const raw = window.localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : [];
-      }
-    } catch {}
-    return [];
-  }
-
-  private safeWrite<T>(key: string, data: T[]) {
-    try {
-      if (
-        typeof window !== 'undefined' &&
-        window.localStorage &&
-        typeof window.localStorage.setItem === 'function'
-      ) {
-        window.localStorage.setItem(key, JSON.stringify(data));
-      }
-    } catch {}
-  }
-
-  private readUsers(): User[] {
-    return this.safeRead<User>(USERS_KEY);
-  }
-
+  /**
+   * Get all users from backend
+   * GET /api/usermanagement/users
+   */
   getAllUsers(): Observable<User[]> {
-    return this.users$.asObservable();
+    return this.http.get<any[]>(`${this.apiUrl}/users`).pipe(
+      tap((users) => console.log('All users from backend:', users)),
+      map((users) =>
+        users.map((user) => ({
+          userID: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role as UserRole,
+          department: user.department || 'Other',
+          status: user.status as 'Active' | 'Inactive',
+        })),
+      ),
+      tap((users) => this.users$.next(users)),
+    );
   }
 
-  getUserById(id: number): User | undefined {
-    return this.users$.value.find((u) => u.userID === id);
+  /**
+   * Get users filtered by role
+   * GET /api/usermanagement/users/role/{role}
+   */
+  getUsersByRole(role: UserRole): Observable<User[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/role/${role}`).pipe(
+      tap((users) => console.log(`Users with role ${role}:`, users)),
+      map((users) =>
+        users.map((user) => ({
+          userID: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role as UserRole,
+          department: user.department || 'Other',
+          status: user.status as 'Active' | 'Inactive',
+        })),
+      ),
+    );
   }
 
-  getUsersByRole(role: UserRole): User[] {
-    return this.users$.value.filter((u) => u.role === role);
+  /**
+   * Get users filtered by status
+   * GET /api/usermanagement/users/status/{status}
+   */
+  getUsersByStatus(status: 'Active' | 'Inactive'): Observable<User[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/status/${status}`).pipe(
+      tap((users) => console.log(`Users with status ${status}:`, users)),
+      map((users) =>
+        users.map((user) => ({
+          userID: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role as UserRole,
+          department: user.department || 'Other',
+          status: user.status as 'Active' | 'Inactive',
+        })),
+      ),
+    );
   }
 
+  /**
+   * Get detailed user information by ID
+   * GET /api/usermanagement/{userId}
+   */
+  getUserById(id: number | string): Observable<UserDetails> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+      tap((user) => console.log('User details:', user)),
+      map((user) => ({
+        userID: user.userId,
+        name: user.name,
+        email: user.email,
+        role: user.role as UserRole,
+        department: user.department || 'Other',
+        status: user.status as 'Active' | 'Inactive',
+        ideasSubmitted: user.ideasSubmitted || 0,
+        commentsPosted: user.commentsPosted || 0,
+        votesCasted: user.votesCasted || 0,
+        reviewsSubmitted: user.reviewsSubmitted || 0,
+      })),
+    );
+  }
+
+  /**
+   * Find user by email
+   * GET /api/usermanagement/email/{email}
+   */
+  getUserByEmail(email: string): Observable<User> {
+    return this.http.get<any>(`${this.apiUrl}/email/${email}`).pipe(
+      tap((user) => console.log('User by email:', user)),
+      map((user) => ({
+        userID: user.userId,
+        name: user.name,
+        email: user.email,
+        role: user.role as UserRole,
+        department: user.department || 'Other',
+        status: user.status as 'Active' | 'Inactive',
+      })),
+    );
+  }
+
+  /**
+   * Search users by name or email
+   * GET /api/usermanagement/search/{term}
+   */
+  searchUsers(term: string): Observable<User[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/search/${term}`).pipe(
+      tap((users) => console.log('Search results:', users)),
+      map((users) =>
+        users.map((user) => ({
+          userID: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role as UserRole,
+          department: user.department || 'Other',
+          status: user.status as 'Active' | 'Inactive',
+        })),
+      ),
+    );
+  }
+
+  /**
+   * Get system statistics
+   * GET /api/usermanagement/statistics/summary
+   */
+  getStatistics(): Observable<UserStatistics> {
+    return this.http.get<any>(`${this.apiUrl}/statistics/summary`).pipe(
+      tap((stats) => console.log('System statistics:', stats)),
+      map((stats) => ({
+        totalUsers: stats.totalUsers,
+        activeUsers: stats.activeUsers,
+        inactiveUsers: stats.inactiveUsers,
+        roleBreakdown: {
+          employees: stats.roleBreakdown?.employees || 0,
+          managers: stats.roleBreakdown?.managers || 0,
+          admins: stats.roleBreakdown?.admins || 0,
+        },
+      })),
+    );
+  }
+
+  /**
+   * Toggle user status (Active <-> Inactive)
+   * PUT /api/usermanagement/{userId}/status
+   */
+  toggleUserStatus(
+    userId: number | string,
+    newStatus: 'Active' | 'Inactive',
+  ): Observable<User> {
+    return this.http
+      .put<any>(`${this.apiUrl}/${userId}/status`, { status: newStatus })
+      .pipe(
+        tap((user) => console.log('User status toggled:', user)),
+        map((user) => ({
+          userID: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role as UserRole,
+          department: user.department || 'Other',
+          status: user.status as 'Active' | 'Inactive',
+        })),
+        tap(() => {
+          // Refresh the local users list
+          this.getAllUsers().subscribe();
+        }),
+      );
+  }
+
+  /**
+   * Activate a user
+   * PUT /api/usermanagement/{userId}/activate
+   */
+  activateUser(userId: number | string): Observable<User> {
+    return this.http.put<any>(`${this.apiUrl}/${userId}/activate`, {}).pipe(
+      tap((user) => console.log('User activated:', user)),
+      map((user) => ({
+        userID: user.userId,
+        name: user.name,
+        email: user.email,
+        role: user.role as UserRole,
+        department: user.department || 'Other',
+        status: user.status as 'Active' | 'Inactive',
+      })),
+      tap(() => {
+        // Refresh the local users list
+        this.getAllUsers().subscribe();
+      }),
+    );
+  }
+
+  /**
+   * Deactivate a user
+   * PUT /api/usermanagement/{userId}/deactivate
+   */
+  deactivateUser(userId: number | string): Observable<User> {
+    return this.http.put<any>(`${this.apiUrl}/${userId}/deactivate`, {}).pipe(
+      tap((user) => console.log('User deactivated:', user)),
+      map((user) => ({
+        userID: user.userId,
+        name: user.name,
+        email: user.email,
+        role: user.role as UserRole,
+        department: user.department || 'Other',
+        status: user.status as 'Active' | 'Inactive',
+      })),
+      tap(() => {
+        // Refresh the local users list
+        this.getAllUsers().subscribe();
+      }),
+    );
+  }
+
+  /**
+   * Change user role
+   * PUT /api/usermanagement/{userId}/role
+   */
+  updateUserRole(userId: number | string, newRole: UserRole): Observable<User> {
+    return this.http
+      .put<any>(`${this.apiUrl}/${userId}/role`, { role: newRole })
+      .pipe(
+        tap((user) => console.log('User role updated:', user)),
+        map((user) => ({
+          userID: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role as UserRole,
+          department: user.department || 'Other',
+          status: user.status as 'Active' | 'Inactive',
+        })),
+        tap(() => {
+          // Refresh the local users list
+          this.getAllUsers().subscribe();
+        }),
+      );
+  }
+
+  /**
+   * Get users by department (frontend filtering from cached data)
+   */
   getUsersByDepartment(department: string): User[] {
     return this.users$.value.filter((u) => u.department === department);
   }
 
-  createUser(partial: Partial<User>): User {
-    const users = this.users$.value.slice();
-    const nextId = users.length
-      ? Math.max(...users.map((u) => u.userID)) + 1
-      : 1;
-
-    const newUser: User = {
-      userID: nextId,
-      name: partial.name || 'Unnamed User',
-      email: partial.email || '',
-      role: partial.role || UserRole.EMPLOYEE,
-      department: partial.department || 'Other',
-      status: partial.status || 'Active',
-    };
-
-    users.push(newUser);
-    this.users$.next(users);
-    this.safeWrite<User>(USERS_KEY, users);
-    return newUser;
-  }
-
-  updateUser(id: number, updates: Partial<User>): void {
-    const users = this.users$.value.slice();
-    const idx = users.findIndex((u) => u.userID === id);
-
-    if (idx >= 0) {
-      users[idx] = { ...users[idx], ...updates };
-      this.users$.next(users);
-      this.safeWrite<User>(USERS_KEY, users);
-    }
-  }
-
-  deleteUser(id: number): void {
-    const users = this.users$.value.filter((u) => u.userID !== id);
-    this.users$.next(users);
-    this.safeWrite<User>(USERS_KEY, users);
-  }
-
-  toggleUserStatus(id: number): void {
-    const user = this.getUserById(id);
-    if (user) {
-      const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-      this.updateUser(id, { status: newStatus });
-    }
-  }
-
-
-  // Check if email already exists (for validation)
+  /**
+   * Check if email already exists (for validation)
+   */
   emailExists(email: string, excludeUserID?: number): boolean {
     return this.users$.value.some(
-      (u) => u.email === email && u.userID !== excludeUserID
+      (u) => u.email === email && u.userID !== excludeUserID,
     );
   }
 }

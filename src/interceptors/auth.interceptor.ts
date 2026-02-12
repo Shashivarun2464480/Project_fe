@@ -1,6 +1,15 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  // Skip interceptor for auth endpoints (login/register)
+  const isAuthEndpoint =
+    req.url.includes('/Auth/login') || req.url.includes('/Auth/register');
+
+  if (isAuthEndpoint) {
+    console.log('Auth Interceptor - Skipping for auth endpoint:', req.url);
+    return next(req);
+  }
+
   // Get token from localStorage
   let token: string | null = null;
   try {

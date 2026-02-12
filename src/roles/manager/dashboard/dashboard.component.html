@@ -2,21 +2,44 @@
   <!-- Stats / Header -->
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Manager Dashboard</h2>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+        Manager Dashboard
+      </h2>
       <p class="text-gray-600 mt-1">Review and manage team ideas.</p>
     </div>
     <div class="flex gap-4">
-      <div class="bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center">
-        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Total Ideas</span>
-        <span class="text-2xl font-black text-indigo-600">{{ ideas.length }}</span>
+      <div
+        class="bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center"
+      >
+        <span class="text-xs font-bold text-gray-500 uppercase tracking-wide"
+          >Total Ideas</span
+        >
+        <span class="text-2xl font-black text-indigo-600">{{
+          ideas.length
+        }}</span>
       </div>
     </div>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!ideas.length" class="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100">
+  <div
+    *ngIf="!ideas.length"
+    class="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100"
+  >
     <div class="text-gray-400 mb-4">
-      <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      <svg
+        class="w-16 h-16 mx-auto"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        ></path>
+      </svg>
     </div>
     <p class="text-xl font-bold text-gray-900">No ideas to review.</p>
     <p class="text-gray-500">Wait for employees to submit new innovations.</p>
@@ -24,20 +47,26 @@
 
   <!-- Grid of Ideas -->
   <div class="grid grid-cols-1 gap-6" *ngIf="ideas.length">
-    <div *ngFor="let idea of ideas" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-      <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
-
+    <div
+      *ngFor="let idea of ideas"
+      class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+    >
+      <div
+        class="flex flex-col md:flex-row md:items-start justify-between gap-6"
+      >
         <!-- Content -->
         <div class="grow">
           <div class="flex items-center gap-3 mb-2">
             <h3 class="text-xl font-bold text-gray-900">{{ idea.title }}</h3>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"
+            <span
+              class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"
               [ngClass]="{
                 'bg-yellow-100 text-yellow-800': idea.status === 'Draft',
                 'bg-blue-100 text-blue-800': idea.status === 'UnderReview',
-                'bg-green-100 text-green-800': idea.status === 'Approved'
-              }">
-              {{ idea.status === 'UnderReview' ? 'Under Review' : idea.status }}
+                'bg-green-100 text-green-800': idea.status === 'Approved',
+              }"
+            >
+              {{ idea.status === "UnderReview" ? "Under Review" : idea.status }}
             </span>
           </div>
 
@@ -46,31 +75,42 @@
           <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
             <div class="flex items-center gap-1.5">
               <span class="font-medium text-gray-900">Submitted:</span>
-              <span>{{ idea.submittedDate | date:'mediumDate' }}</span>
+              <span>{{ idea.submittedDate | date: "mediumDate" }}</span>
             </div>
             <div class="hidden md:block w-1 h-1 bg-gray-300 rounded-full"></div>
-             <div class="flex items-center gap-1.5">
-              <span class="font-medium text-gray-900">Author ID:</span>
-              <span class="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">{{ idea.userID }}</span>
+            <div class="flex items-center gap-1.5">
+              <span class="font-medium text-gray-900">Author:</span>
+              <span
+                class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-sm font-semibold"
+                >{{ idea.authorName || "User #" + idea.userID }}</span
+              >
             </div>
           </div>
 
           <div class="flex items-center gap-4 mt-4">
-            <div class="flex items-center gap-2 text-green-600 bg-green-50 px-2 py-1 rounded-md text-sm font-semibold">
+            <div
+              class="flex items-center gap-2 text-green-600 bg-green-50 px-2 py-1 rounded-md text-sm font-semibold"
+            >
               <div>
                 <img src="Like.svg" alt="Like Icon" class="w-4 h-4" />
-              </div> {{ idea.upvotes || 0 }}
+              </div>
+              {{ idea.upvotes || 0 }}
             </div>
-             <div class="flex items-center gap-2 text-red-600 bg-red-50 px-2 py-1 rounded-md text-sm font-semibold">
+            <div
+              class="flex items-center gap-2 text-red-600 bg-red-50 px-2 py-1 rounded-md text-sm font-semibold"
+            >
               <div>
                 <img src="disLike.svg" alt="disLike Icon" class="w-4 h-4" />
-              </div> {{ idea.downvotes || 0 }}
+              </div>
+              {{ idea.downvotes || 0 }}
             </div>
           </div>
         </div>
 
         <!-- Actions -->
-        <div class="shrink-0 flex flex-col items-end gap-3 min-w-50 justify-center">
+        <div
+          class="shrink-0 flex flex-col items-end gap-3 min-w-50 justify-center"
+        >
           <!-- Review Button -->
           <a
             [routerLink]="['/manager/decision']"
@@ -78,10 +118,21 @@
             class="w-full text-center px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md hover:shadow-indigo-300 flex items-center justify-center gap-2"
           >
             <span>Review Details</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              ></path>
+            </svg>
           </a>
         </div>
-
       </div>
     </div>
   </div>

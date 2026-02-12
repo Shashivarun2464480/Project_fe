@@ -13,10 +13,32 @@ import { Idea } from '../../../models/model';
 })
 export class DashboardComponent implements OnInit {
   ideas: Idea[] = [];
-  constructor(private ideaService: IdeaService) { }
+  isLoading = false;
+
+  constructor(private ideaService: IdeaService) {}
 
   ngOnInit(): void {
-    this.ideaService.getAllIdeas().subscribe((list) => (this.ideas = list));
+    this.loadIdeas();
   }
 
+  loadIdeas() {
+    this.isLoading = true;
+    // Use manager-specific endpoint to get ideas with full details
+    this.ideaService.getIdeasForReview().subscribe({
+      next: (list) => {
+        this.ideas = list;
+        this.isLoading = false;
+        console.log('Manager dashboard loaded ideas:', this.ideas.length);
+      },
+      error: (error) => {
+        console.error('Error loading ideas for manager:', error);
+        this.isLoading = false;
+        // Fallback to regular getAllIdeas if manager endpoint fails
+        this.ideaService.loadIdeas();
+        this.ideaService.getAllIdeas().subscribe((list) => {
+          this.ideas = list;
+        });
+      },
+    });
+  }
 }

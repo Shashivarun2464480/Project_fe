@@ -21,13 +21,23 @@ export class DecisionComponent implements OnInit {
   reviews: Review[] = [];
   currentUserID = 0;
   currentUserName = '';
-  comments:Comment[] = [];
+  comments: Comment[] = [];
+  filterStatus: 'All' | 'Draft' | 'UnderReview' | 'Approved' = 'All';
+  isLoading = false;
+statusOptions: any;
+
+  get filteredIdeas(): Idea[] {
+    if (this.filterStatus === 'All') {
+      return this.ideas;
+    }
+    return this.ideas.filter((idea) => idea.status === this.filterStatus);
+  }
 
   constructor(
     private route: ActivatedRoute,
     private ideaService: IdeaService,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+  ) {}
 
   ngOnInit(): void {
     // load user
@@ -37,36 +47,121 @@ export class DecisionComponent implements OnInit {
       this.currentUserName = user.name || '';
     }
 
-    this.ideaService.getAllIdeas().subscribe((list) => (this.ideas = list));
+    // Load ideas for review from backend
+    this.loadIdeasForReview();
 
     // react to query param changes (e.g. opened from manager dashboard link)
     this.route.queryParamMap.subscribe((q) => {
-      const id = Number(q.get('id'));
+      const id = q.get('id');
       if (id) {
-        const found = this.ideas.find((i) => i.ideaID === id);
+        const found = this.ideas.find((i) => String(i.ideaID) === id);
         if (found) this.select(found);
       }
     });
   }
 
+  loadIdeasForReview() {
+    this.isLoading = true;
+    this.ideaService.getIdeasForReview().subscribe({
+      next: (list) => {
+        this.ideas = list;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading ideas for review:', error);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  filterByStatus(status: 'All' | 'Draft' | 'UnderReview' | 'Approved') {
+    this.filterStatus = status;
+  }
+
   select(idea: Idea | null) {
     this.selected = idea;
     if (idea) {
-      this.reviews = this.ideaService.getReviewsForIdea(idea.ideaID);
-      this.comments = this.ideaService.getCommentsForIdea(idea.ideaID);
+      // Load reviews from backend
+      this.ideaService.getReviewsForIdea(idea.ideaID).subscribe({
+        next: (reviews) => {
+          this.reviews = reviews;
+        },
+        error: (error) => {
+          console.error('Error loading reviews:', error);
+          this.reviews = [];
+        },
+      });
+
+      // Load comments from backend
+      this.ideaService.getCommentsForIdea(idea.ideaID).subscribe({
+        next: (comments) => {
+          this.comments = comments;
+        },
+        error: (error) => {
+          console.error('Error loading comments:', error);
+          this.comments = [];
+        },
+      });
     }
   }
 
   submitReview() {
+    if (!this.selected || !this.feedback.trim()) {
+      alert('Please provide feedback for your review.');
+      return;
+    }
+
+    this.ideaService
+      .submitReview(this.selected.ideaID, this.feedback.trim(), this.decision)
+      .subscribe({
+        next: (response) => {
+          console.log('Review submitted successfully:', response);
+          alert('Review submitted successfully!');
+          this.feedback = '';
+
+          // Reload reviews
+          if (this.selected) {
+            this.ideaService.getReviewsForIdea(this.selected.ideaID).subscribe({
+              next: (reviews) => {
+                this.reviews = reviews;
+              },
+            });
+          }
+        },
+        error: (error) => {
+          console.error('Error submitting review:', error);
+          const errorMsg =
+            error.error?.message ||
+            error.error ||
+            'Failed to submit review. You may have already reviewed this idea.';
+          alert(errorMsg);
+        },
+      });
+  }
+
+  changeStatus(status: 'Draft' | 'UnderReview' | 'Approved') {
     if (!this.selected) return;
-    this.ideaService.addReview({
-      ideaID: this.selected.ideaID,
-      reviewerID: this.currentUserID,
-      reviewerName: this.currentUserName,
-      feedback: this.feedback,
-      decision: this.decision,
+
+    if (
+      !confirm(`Are you sure you want to change the status to "${status}"?`)
+    ) {
+      return;
+    }
+
+    this.ideaService.changeIdeaStatus(this.selected.ideaID, status).subscribe({
+      next: () => {
+        console.log('Status changed successfully');
+        alert(`Status changed to ${status} successfully!`);
+        if (this.selected) {
+          this.selected.status = status;
+        }
+        // Reload ideas to reflect changes
+        this.loadIdeasForReview();
+      },
+      error: (error) => {
+        console.error('Error changing status:', error);
+        alert('Failed to change status. Please try again.');
+      },
     });
-    this.feedback = '';
-    this.reviews = this.ideaService.getReviewsForIdea(this.selected.ideaID);
   }
 }

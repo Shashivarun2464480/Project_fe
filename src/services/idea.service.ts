@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Idea, Comment, Vote, Review } from '../models/model';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class IdeaService {
@@ -25,6 +25,8 @@ export class IdeaService {
           description: idea.description,
           categoryID: idea.categoryId || idea.categoryID,
           userID: idea.userId || idea.userID,
+          authorName:
+            idea.submittedByUserName || idea.authorName || idea.userName || '',
           submittedDate: idea.submittedDate || new Date().toISOString(),
           status: idea.status || 'UnderReview',
           category: idea.categoryName || idea.category || '',
@@ -47,25 +49,23 @@ export class IdeaService {
 
   getMyIdeas(): Observable<Idea[]> {
     return this.http.get<any[]>(`${this.apiUrl}/my-ideas`).pipe(
-      tap((ideas) => {
-        console.log('My ideas from backend:', ideas);
-      }),
-      tap((ideas) => {
-        // Map backend response to frontend Idea model
-        const mappedIdeas = ideas.map((idea) => ({
-          ideaID: idea.ideaID || idea.ideaID,
+      tap((ideas) => console.log('My ideas from backend:', ideas)),
+      map((ideas) =>
+        ideas.map((idea) => ({
+          ideaID: idea.ideaId || idea.ideaID,
           title: idea.title,
           description: idea.description,
-          categoryID: idea.categoryID || idea.categoryID,
-          userID: idea.userID || idea.userID,
+          categoryID: idea.categoryId || idea.categoryID,
+          userID: idea.userId || idea.userID,
+          authorName:
+            idea.submittedByUserName || idea.authorName || idea.userName || '',
           submittedDate: idea.submittedDate || new Date().toISOString(),
           status: idea.status || 'UnderReview',
-          category: idea.category || idea.category || '',
+          category: idea.categoryName || idea.category || '',
           upvotes: idea.upvotes || 0,
           downvotes: idea.downvotes || 0,
-        }));
-        console.log('Mapped my ideas:', mappedIdeas);
-      }),
+        })),
+      ),
     );
   }
 
@@ -109,21 +109,137 @@ export class IdeaService {
     );
   }
 
-  addComment(c: Partial<Comment>): Comment {
-    // TODO: Connect to backend API when available
-    const comment: Comment = {
-      commentID: Date.now(),
-      ideaID: c.ideaID || 0,
-      userID: c.userID || 0,
+  addComment(c: Partial<Comment>): Observable<Comment> {
+    const ideaId = c.ideaID;
+    const payload = {
       text: c.text || '',
-      createdDate: c.createdDate || new Date().toISOString(),
-      userName: c.userName,
     };
-    return comment;
+
+    return this.http
+      .post<any>(`https://localhost:7175/api/comment/${ideaId}`, payload)
+      .pipe(
+        tap((response) => {
+          console.log('Comment added:', response);
+        }),
+        tap((response) => {
+          const comment: Comment = {
+            commentID: response.commentID,
+            ideaID: response.ideaID || ideaId!,
+            userID: response.userID,
+            text: response.text,
+            createdDate: response.createdDate,
+            userName: response.userName,
+          };
+          return comment;
+        }),
+      );
+  }
+
+  getCommentsForIdea(ideaID: number | string): Observable<Comment[]> {
+    return this.http
+      .get<any[]>(`https://localhost:7175/api/comment/${ideaID}`)
+      .pipe(
+        tap((comments) => {
+          console.log('Comments from backend:', comments);
+          return comments.map((c) => ({
+            commentID: c.commentID,
+            ideaID: c.ideaID || ideaID,
+            userID: c.userID,
+            text: c.text,
+            createdDate: c.createdDate,
+            userName: c.userName,
+          }));
+        }),
+      );
+  }
+
+  updateComment(commentID: number | string, text: string): Observable<any> {
+    const payload = { text };
+    return this.http.put(
+      `https://localhost:7175/api/comment/${commentID}`,
+      payload,
+    );
+  }
+
+  deleteComment(commentID: number | string): Observable<any> {
+    return this.http.delete(`https://localhost:7175/api/comment/${commentID}`);
+  }
+
+  // Review methods
+  submitReview(
+    ideaID: number | string,
+    feedback: string,
+    decision: 'Approve' | 'Reject',
+  ): Observable<any> {
+    const payload = {
+      ideaId: ideaID,
+      feedback: feedback,
+      decision: decision,
+    };
+    return this.http
+      .post('https://localhost:7175/api/review/submit', payload)
+      .pipe(
+        tap((response) => {
+          console.log('Review submitted:', response);
+        }),
+      );
+  }
+
+  getReviewsForIdea(ideaID: number | string): Observable<Review[]> {
+    return this.http
+      .get<any[]>(`https://localhost:7175/api/review/idea/${ideaID}`)
+      .pipe(
+        tap((reviews) => {
+          console.log('Reviews from backend:', reviews);
+          return reviews.map((r) => ({
+            reviewID: r.reviewID,
+            ideaID: r.ideaID || ideaID,
+            reviewerID: r.reviewerID,
+            reviewerName: r.reviewerName,
+            feedback: r.feedback,
+            decision: r.decision,
+            reviewDate: r.reviewDate,
+          }));
+        }),
+      );
+  }
+
+  getMyReviews(): Observable<Review[]> {
+    return this.http
+      .get<any[]>('https://localhost:7175/api/review/manager/my-reviews')
+      .pipe(
+        tap((reviews) => {
+          return reviews.map((r) => ({
+            reviewID: r.reviewID,
+            ideaID: r.ideaID,
+            reviewerID: r.reviewerID,
+            reviewerName: r.reviewerName,
+            feedback: r.feedback,
+            decision: r.decision,
+            reviewDate: r.reviewDate,
+          }));
+        }),
+      );
+  }
+
+  updateReview(
+    reviewID: number | string,
+    feedback: string,
+    decision: 'Approve' | 'Reject',
+  ): Observable<any> {
+    const payload = { feedback, decision };
+    return this.http.put(
+      `https://localhost:7175/api/review/${reviewID}`,
+      payload,
+    );
+  }
+
+  deleteReview(reviewID: number | string): Observable<any> {
+    return this.http.delete(`https://localhost:7175/api/review/${reviewID}`);
   }
 
   addReview(r: Partial<Review>): Review {
-    // TODO: Connect to backend API when available
+    // Deprecated - use submitReview instead
     const review: Review = {
       reviewID: Date.now(),
       ideaID: r.ideaID || 0,
@@ -136,16 +252,91 @@ export class IdeaService {
     return review;
   }
 
-  getReviewsForIdea(ideaID: number | string) {
-    // TODO: Connect to backend API when available
-    return [];
+  // Manager methods for reviewing ideas
+  getIdeasForReview(): Observable<Idea[]> {
+    return this.http.get<any[]>('https://localhost:7175/api/review/ideas').pipe(
+      tap((ideas) => console.log('Ideas for review from backend:', ideas)),
+      map((ideas) =>
+        ideas.map((idea) => ({
+          ideaID: idea.ideaId || idea.ideaID,
+          title: idea.title,
+          description: idea.description,
+          categoryID: idea.categoryId || idea.categoryID,
+          userID: idea.userId || idea.userID,
+          authorName:
+            idea.submittedByUserName || idea.authorName || idea.userName || '',
+          submittedDate: idea.submittedDate || new Date().toISOString(),
+          status: idea.status || 'UnderReview',
+          category: idea.categoryName || idea.category || '',
+          upvotes: idea.upvotes || 0,
+          downvotes: idea.downvotes || 0,
+        })),
+      ),
+    );
+  }
+
+  getIdeasByStatus(status: string): Observable<Idea[]> {
+    return this.http
+      .get<any[]>(`https://localhost:7175/api/review/ideas/status/${status}`)
+      .pipe(
+        tap((ideas) => console.log(`Ideas with status ${status}:`, ideas)),
+        map((ideas) =>
+          ideas.map((idea) => ({
+            ideaID: idea.ideaId || idea.ideaID,
+            title: idea.title,
+            description: idea.description,
+            categoryID: idea.categoryId || idea.categoryID,
+            userID: idea.userId || idea.userID,
+            authorName:
+              idea.submittedByUserName ||
+              idea.authorName ||
+              idea.userName ||
+              '',
+            submittedDate: idea.submittedDate || new Date().toISOString(),
+            status: idea.status || 'UnderReview',
+            category: idea.categoryName || idea.category || '',
+            upvotes: idea.upvotes || 0,
+            downvotes: idea.downvotes || 0,
+          })),
+        ),
+      );
+  }
+
+  getIdeaWithDetails(ideaID: number | string): Observable<any> {
+    return this.http
+      .get<any>(`https://localhost:7175/api/review/ideas/${ideaID}`)
+      .pipe(
+        tap((response) => {
+          console.log('Idea with full details:', response);
+        }),
+      );
+  }
+
+  changeIdeaStatus(
+    ideaID: number | string,
+    status: 'Draft' | 'UnderReview' | 'Approved',
+  ): Observable<any> {
+    const payload = { status };
+    return this.http
+      .put(`https://localhost:7175/api/review/ideas/${ideaID}/status`, payload)
+      .pipe(
+        tap(() => {
+          // Update local ideas list
+          const ideas = this.ideas$.value.slice();
+          const idx = ideas.findIndex((i) => i.ideaID === ideaID);
+          if (idx >= 0) {
+            ideas[idx] = { ...ideas[idx], status };
+            this.ideas$.next(ideas);
+          }
+        }),
+      );
   }
 
   setIdeaStatus(
     ideaID: number | string,
     status: 'Draft' | 'UnderReview' | 'Approved',
   ) {
-    // TODO: Connect to backend API when available
+    // Deprecated - use changeIdeaStatus instead
     const ideas = this.ideas$.value.slice();
     const idx = ideas.findIndex((i) => i.ideaID === ideaID);
     if (idx >= 0) {
@@ -154,9 +345,47 @@ export class IdeaService {
     }
   }
 
-  getCommentsForIdea(ideaID: number | string): Comment[] {
-    // TODO: Connect to backend API when available
-    return [];
+  // Voting methods
+  upvoteIdea(ideaID: number | string): Observable<any> {
+    return this.http
+      .post(`https://localhost:7175/api/vote/${ideaID}/upvote`, {})
+      .pipe(
+        tap((response) => {
+          console.log('Upvote response:', response);
+          // Refresh ideas to get updated vote counts
+          this.loadIdeas();
+        }),
+      );
+  }
+
+  downvoteIdea(ideaID: number | string, commentText: string): Observable<any> {
+    const payload = {
+      voteType: 'Downvote',
+      commentText: commentText,
+    };
+    return this.http
+      .post(`https://localhost:7175/api/vote/${ideaID}/downvote`, payload)
+      .pipe(
+        tap((response) => {
+          console.log('Downvote response:', response);
+          // Refresh ideas to get updated vote counts
+          this.loadIdeas();
+        }),
+      );
+  }
+
+  removeVote(ideaID: number | string): Observable<any> {
+    return this.http.delete(`https://localhost:7175/api/vote/${ideaID}`).pipe(
+      tap((response) => {
+        console.log('Remove vote response:', response);
+        // Refresh ideas to get updated vote counts
+        this.loadIdeas();
+      }),
+    );
+  }
+
+  getVotesForIdea(ideaID: number | string): Observable<any[]> {
+    return this.http.get<any[]>(`https://localhost:7175/api/vote/${ideaID}`);
   }
 
   vote(
@@ -164,7 +393,7 @@ export class IdeaService {
     userID: number,
     voteType: 'Upvote' | 'Downvote',
   ) {
-    // TODO: Connect to backend API when available
+    // Deprecated - use upvoteIdea or downvoteIdea instead
     console.log('Vote:', { ideaID, userID, voteType });
   }
 }

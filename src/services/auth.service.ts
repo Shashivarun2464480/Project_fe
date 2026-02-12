@@ -100,14 +100,27 @@ export class AuthService {
     password: string;
     role: string;
   }): Observable<string> {
-    return this.http.post(`${this.apiUrl}/register`, payload, {
-      responseType: 'text',
+    console.log('Auth Service - Register request:', {
+      ...payload,
+      password: '***',
     });
+    console.log('Auth Service - API URL:', `${this.apiUrl}/register`);
+    return this.http
+      .post(`${this.apiUrl}/register`, payload, {
+        responseType: 'text',
+      })
+      .pipe(
+        tap((response) =>
+          console.log('Auth Service - Register response:', response),
+        ),
+      );
   }
 
   // Login user and store JWT token
   loginWithCredentials(email: string, password: string): Observable<User> {
     const loginPayload = { email, password };
+    console.log('Auth Service - Login request:', { email, password: '***' });
+    console.log('Auth Service - API URL:', `${this.apiUrl}/login`);
 
     return this.http.post<any>(`${this.apiUrl}/login`, loginPayload).pipe(
       tap((response: any) => {
