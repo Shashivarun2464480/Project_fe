@@ -28,16 +28,16 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
 
   ngOnInit(): void {
-    console.log('[NotificationComponent] Initializing...');
+    console.log('[NotificationComponent] Component initialized');
 
-    // Subscribe to notifications
+    // Subscribe to notifications from service
     this.subs.push(
       this.notificationService.notifications$.subscribe((notifications) => {
         console.log(
-          '[NotificationComponent] Received notifications update:',
-          notifications,
+          '[NotificationComponent] Notifications updated:',
+          notifications?.length || 0,
+          'notifications',
         );
-        console.log('[NotificationComponent] Count:', notifications.length);
         this.notifications.set(notifications);
       }),
     );
@@ -45,7 +45,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     // Subscribe to unread count
     this.subs.push(
       this.notificationService.unreadCount$.subscribe((count) => {
-        console.log('[NotificationComponent] Unread count:', count);
+        console.log('[NotificationComponent] Unread count changed to:', count);
         this.unreadCount.set(count);
       }),
     );
@@ -97,6 +97,17 @@ export class NotificationComponent implements OnInit, OnDestroy {
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
+  }
+
+  // Debug method - make accessible via console
+  debugNotifications(): void {
+    console.log('=== NOTIFICATION COMPONENT DEBUG ===');
+    console.log('Notifications:', this.notifications());
+    console.log('Unread count:', this.unreadCount());
+    console.log('Dropdown open:', this.notificationDropdownOpen());
+    // Call service debug
+    this.notificationService.testApiCall();
+    console.log('=== END DEBUG ===');
   }
 
   @HostListener('document:keydown.escape')

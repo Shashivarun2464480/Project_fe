@@ -29,106 +29,49 @@ export class NotificationService {
 
   /**
    * Load notifications from backend API
-   * GET /api/Notification
+   * GET /api/Notification - returns all notifications for current user ordered by newest first
    */
   private loadNotifications(): void {
     const currentUser = this.auth.getCurrentUser();
-    console.log(
-      '[NotificationService] Loading notifications for user:',
-      currentUser,
-    );
+    console.log('[NotificationService] Loading notifications...');
+    console.log('[NotificationService] Current user:', currentUser);
 
     if (!currentUser) {
-      console.log(
-        '[NotificationService] No user logged in, skipping notification load',
-      );
+      console.log('[NotificationService] No user logged in, skipping load');
       return;
     }
 
-    // Check token
-    const token = this.auth.getToken();
-    console.log('[NotificationService] Auth token exists:', !!token);
-    if (token) {
-      try {
-        const parts = token.split('.');
-        if (parts.length === 3) {
-          const payload = JSON.parse(
-            atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
-          );
-          console.log('[NotificationService] JWT payload:', payload);
-          console.log(
-            '[NotificationService] User ID from JWT (sub):',
-            payload.sub,
-          );
-          console.log(
-            '[NotificationService] User role from JWT:',
-            payload.role,
-          );
-        }
-      } catch (e) {
-        console.error('[NotificationService] Error decoding JWT:', e);
-      }
-    }
+    console.log('[NotificationService] Fetching from API:', this.apiUrl);
 
-    console.log('[NotificationService] Fetching from:', this.apiUrl);
-
-    this.http
-      .get<NotificationResponse[]>(this.apiUrl, { observe: 'response' })
-      .pipe(
-        tap((response) => {
-          console.log('[NotificationService] Full HTTP Response:', response);
-          console.log(
-            '[NotificationService] Response status:',
-            response.status,
-          );
-          console.log(
-            '[NotificationService] Response headers:',
-            response.headers,
-          );
-          console.log('[NotificationService] Response body:', response.body);
-        }),
-        map((response) => response.body || []),
-        tap((responses) => {
-          console.log('[NotificationService] Raw backend response:', responses);
-          console.log(
-            '[NotificationService] Response count:',
-            responses?.length || 0,
-          );
-          if (responses && responses.length > 0) {
-            console.log(
-              '[NotificationService] First notification:',
-              responses[0],
-            );
-          }
-        }),
-        map((responses) => this.mapNotifications(responses)),
-        tap((notifications) => {
-          console.log(
-            '[NotificationService] Mapped notifications:',
-            notifications,
-          );
-          console.log(
-            '[NotificationService] Mapped count:',
-            notifications.length,
-          );
-        }),
-        catchError((error) => {
-          console.error(
-            '[NotificationService] Error loading notifications:',
-            error,
-          );
-          console.error('[NotificationService] Error status:', error.status);
-          console.error('[NotificationService] Error message:', error.message);
-          return of([]);
-        }),
-      )
-      .subscribe((notifications) => {
+    this.http.get<NotificationResponse[]>(this.apiUrl).subscribe({
+      next: (responses) => {
         console.log(
-          '[NotificationService] Setting notifications in subject:',
+          '[NotificationService] Backend response received:',
+          responses,
+        );
+        console.log(
+          '[NotificationService] Notification count:',
+          responses?.length || 0,
+        );
+
+        const notifications = this.mapNotifications(responses || []);
+        console.log(
+          '[NotificationService] Mapped notifications:',
           notifications,
         );
+
+        // Update subject with latest notifications
         this.notificationsSubject.next(notifications);
-      });
+      },
+      error: (error) => {
+        console.error(
+          '[NotificationService] Error fetching notifications:',
+          error,
+        );
+        console.error('[NotificationService] Error status:', error.status);
+        console.error('[NotificationService] Error details:', error.error);
+      },
+    });
   }
 
   /**
@@ -296,38 +239,47 @@ export class NotificationService {
   }
 
   /**
-   * Debug method - Log current state
+   * Debug method - Test API call directly
    */
-  debugCurrentState(): void {
+  testApiCall(): void {
+    console.log('=== STARTING NOTIFICATION API TEST ===');
+
     const currentUser = this.auth.getCurrentUser();
-    const token = this.auth.getToken();
+    console.log('Current user:', currentUser);
 
-    console.log('=== NOTIFICATION DEBUG STATE ===');
-    console.log('Current User:', currentUser);
-    console.log('User ID:', currentUser?.userID);
-    console.log('Token exists:', !!token);
-    console.log('Current notifications:', this.notificationsSubject.value);
-    console.log('API URL:', this.apiUrl);
-
-    if (token) {
-      try {
-        const parts = token.split('.');
-        if (parts.length === 3) {
-          const payload = JSON.parse(
-            atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
-          );
-          console.log('JWT User ID (sub):', payload.sub);
-          console.log(
-            'JWT Role:',
-            payload[
-              'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-            ],
-          );
-        }
-      } catch (e) {
-        console.error('Error decoding JWT:', e);
-      }
+    if (!currentUser) {
+      console.log('No user logged in!');
+      return;
     }
-    console.log('=== END DEBUG STATE ===');
+
+    const token = this.auth.getToken();
+    console.log('Token length:', token?.length);
+
+    // Make direct API call to see raw response
+    this.http.get<any>(this.apiUrl).subscribe({
+      next: (response) => {
+        console.log('=== RAW API RESPONSE ===');
+        console.log('Response type:', typeof response);
+        console.log('Is array:', Array.isArray(response));
+        console.log('Response:', response);
+
+        if (Array.isArray(response)) {
+          console.log('Array length:', response.length);
+          if (response.length > 0) {
+            console.log('First item:', response[0]);
+            console.log('First item keys:', Object.keys(response[0]));
+          }
+        }
+        console.log('=== END RAW RESPONSE ===');
+      },
+      error: (error) => {
+        console.log('=== API ERROR ===');
+        console.log('Status:', error.status);
+        console.log('Status text:', error.statusText);
+        console.log('Error:', error.error);
+        console.log('Message:', error.message);
+        console.log('=== END ERROR ===');
+      },
+    });
   }
 }
