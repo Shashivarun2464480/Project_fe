@@ -54,25 +54,22 @@ export class DecisionComponent implements OnInit {
       this.currentUserName = user.name || '';
     }
 
-    // Load ideas for review from backend
-    this.loadIdeasForReview();
-
-    // react to query param changes (e.g. opened from manager dashboard link)
-    this.route.queryParamMap.subscribe((q) => {
-      const id = q.get('id');
-      if (id) {
-        const found = this.ideas.find((i) => String(i.ideaID) === id);
-        if (found) this.select(found);
-      }
-    });
+    // Read query param first, then load ideas and auto-select if id is present
+    const idFromRoute = this.route.snapshot.queryParamMap.get('id');
+    this.loadIdeasForReview(idFromRoute ?? undefined);
   }
 
-  loadIdeasForReview() {
+  loadIdeasForReview(selectIdeaId?: string) {
     this.isLoading = true;
     this.reviewService.getIdeasForReview().subscribe({
       next: (list) => {
         this.ideas = list;
         this.isLoading = false;
+        // Auto-select idea if an id was passed (e.g. from manager dashboard)
+        if (selectIdeaId) {
+          const found = this.ideas.find((i) => String(i.ideaID) === selectIdeaId);
+          if (found) this.select(found);
+        }
       },
       error: (error) => {
         console.error('Error loading ideas for review:', error);
