@@ -26,6 +26,8 @@ export interface Idea {
   upvotes?: number;
   downvotes?: number;
   Comments?: Comment[];
+  hasVoted?: boolean; // Indicates if current user has voted on this idea
+  userVoteType?: 'Upvote' | 'Downvote'; // Type of vote the current user gave
 }
 export interface Review {
   reviewID?: number;

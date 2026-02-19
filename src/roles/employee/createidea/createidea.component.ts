@@ -64,9 +64,7 @@ export class CreateideaComponent implements OnInit {
     }
     // Load active categories
     this.categoryService.getAllCategories().subscribe((categories) => {
-      console.log('All categories received:', categories);
       this.categories = categories.filter((c) => c.isActive);
-      console.log('Active categories filtered:', this.categories);
     });
   }
 

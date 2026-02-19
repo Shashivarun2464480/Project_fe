@@ -112,8 +112,17 @@
           <div class="flex items-center gap-4">
             <button
               (click)="upvote(idea)"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-green-100 text-gray-600 hover:text-green-600 transition-colors"
-              title="Upvote"
+              [disabled]="idea.hasVoted"
+              [ngClass]="{
+                'bg-gray-50 hover:bg-green-100 text-gray-600 hover:text-green-600':
+                  !idea.hasVoted || idea.userVoteType !== 'Upvote',
+                'bg-green-100 text-green-600':
+                  idea.hasVoted && idea.userVoteType === 'Upvote',
+              }"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-100 disabled:hover:text-green-600"
+              [title]="
+                idea.hasVoted ? 'You have already voted on this idea' : 'Upvote'
+              "
             >
               <div class="flex items-center">
                 <img src="Like.svg" alt="Like Icon" class="w-4 h-4" />
@@ -122,8 +131,19 @@
             </button>
             <button
               (click)="downvote(idea)"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-red-100 text-gray-600 hover:text-red-600 transition-colors"
-              title="Downvote"
+              [disabled]="idea.hasVoted"
+              [ngClass]="{
+                'bg-gray-50 hover:bg-red-100 text-gray-600 hover:text-red-600':
+                  !idea.hasVoted || idea.userVoteType !== 'Downvote',
+                'bg-red-100 text-red-600':
+                  idea.hasVoted && idea.userVoteType === 'Downvote',
+              }"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-100 disabled:hover:text-red-600"
+              [title]="
+                idea.hasVoted
+                  ? 'You have already voted on this idea'
+                  : 'Downvote'
+              "
             >
               <div class="flex items-center">
                 <img src="disLike.svg" alt="disLike Icon" class="w-4 h-4" />

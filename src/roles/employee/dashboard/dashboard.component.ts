@@ -12,6 +12,9 @@ import {
   Review,
   User,
 } from '../../../models/model';
+import { forkJoin } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,12 +56,40 @@ export class DashboardComponent implements OnInit {
     // Subscribe to get updates whenever ideas change
     this.ideaService.getAllIdeas().subscribe((list) => {
       this.ideas = list;
+      // Check if current user has voted on each idea
+      this.checkAllUserVotes();
       console.log('Dashboard received ideas:', this.ideas.length, 'ideas');
     });
   }
 
   loadCurrentUser() {
     this.currentUser = this.authService.getCurrentUser();
+  }
+
+  checkAllUserVotes() {
+    // Use forkJoin to wait for all vote checks to complete
+    if (this.ideas.length === 0) return;
+
+    const voteChecks = this.ideas.map((idea) =>
+      this.voteService.hasUserVoted(idea.ideaID).pipe(
+        catchError((error) => {
+          console.error('Error checking vote for idea', idea.ideaID, error);
+          return of({ hasVoted: false, voteType: null });
+        }),
+      ),
+    );
+
+    forkJoin(voteChecks).subscribe((results) => {
+      results.forEach((result, index) => {
+        if (index < this.ideas.length) {
+          this.ideas[index].hasVoted = result.hasVoted || false;
+          this.ideas[index].userVoteType = result.voteType || null;
+          console.log(
+            `Idea ${this.ideas[index].ideaID}: hasVoted=${this.ideas[index].hasVoted}`,
+          );
+        }
+      });
+    });
   }
 
   selectIdea(idea: Idea) {
@@ -113,11 +144,23 @@ export class DashboardComponent implements OnInit {
 
   upvote(idea: Idea) {
     if (!this.currentUser) return;
+    if (idea.hasVoted) {
+      alert('You have already voted on this idea.');
+      return;
+    }
+
+    // Store current scroll position
+    const scrollY = window.scrollY;
 
     this.voteService.upvoteIdea(idea.ideaID).subscribe({
       next: (response: any) => {
         console.log('Upvoted successfully');
-        // Ideas will be automatically reloaded by the service
+        // Update the UI only on success
+        idea.upvotes = (idea.upvotes || 0) + 1;
+        idea.hasVoted = true;
+        idea.userVoteType = 'Upvote';
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
       },
       error: (error: any) => {
         console.error('Error upvoting:', error);
@@ -130,6 +173,11 @@ export class DashboardComponent implements OnInit {
 
   downvote(idea: Idea) {
     if (!this.currentUser) return;
+
+    if (idea.hasVoted) {
+      alert('You have already voted on this idea.');
+      return;
+    }
 
     // Prompt for comment (mandatory for downvote)
     const comment = prompt(
@@ -148,10 +196,18 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    // Store current scroll position
+    const scrollY = window.scrollY;
+
     this.voteService.downvoteIdea(idea.ideaID, comment.trim()).subscribe({
       next: (response: any) => {
         console.log('Downvoted successfully with comment');
-        // Ideas will be automatically reloaded by the service
+        // Update the UI only on success
+        idea.downvotes = (idea.downvotes || 0) + 1;
+        idea.hasVoted = true;
+        idea.userVoteType = 'Downvote';
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
       },
       error: (error: any) => {
         console.error('Error downvoting:', error);
