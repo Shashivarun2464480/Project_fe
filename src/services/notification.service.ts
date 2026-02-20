@@ -33,43 +33,43 @@ export class NotificationService {
    */
   private loadNotifications(): void {
     const currentUser = this.auth.getCurrentUser();
-    console.log('[NotificationService] Loading notifications...');
-    console.log('[NotificationService] Current user:', currentUser);
+    // console.log('[NotificationService] Loading notifications...');
+    // console.log('[NotificationService] Current user:', currentUser);
 
     if (!currentUser) {
-      console.log('[NotificationService] No user logged in, skipping load');
+      // console.log('[NotificationService] No user logged in, skipping load');
       return;
     }
 
-    console.log('[NotificationService] Fetching from API:', this.apiUrl);
+    // console.log('[NotificationService] Fetching from API:', this.apiUrl);
 
     this.http.get<NotificationResponse[]>(this.apiUrl).subscribe({
       next: (responses) => {
-        console.log(
-          '[NotificationService] Backend response received:',
-          responses,
-        );
-        console.log(
-          '[NotificationService] Notification count:',
-          responses?.length || 0,
-        );
+        // console.log(
+        //   '[NotificationService] Backend response received:',
+        //   responses,
+        // );
+        // console.log(
+        //   '[NotificationService] Notification count:',
+        //   responses?.length || 0,
+        // );
 
         const notifications = this.mapNotifications(responses || []);
-        console.log(
-          '[NotificationService] Mapped notifications:',
-          notifications,
-        );
+        // console.log(
+        //   '[NotificationService] Mapped notifications:',
+        //   notifications,
+        // );
 
         // Update subject with latest notifications
         this.notificationsSubject.next(notifications);
       },
       error: (error) => {
-        console.error(
-          '[NotificationService] Error fetching notifications:',
-          error,
-        );
-        console.error('[NotificationService] Error status:', error.status);
-        console.error('[NotificationService] Error details:', error.error);
+        // console.error(
+        //   '[NotificationService] Error fetching notifications:',
+        //   error,
+        // );
+        // console.error('[NotificationService] Error status:', error.status);
+        // console.error('[NotificationService] Error details:', error.error);
       },
     });
   }
@@ -120,7 +120,7 @@ export class NotificationService {
           this.notificationsSubject.next(updated);
         }),
         catchError((error) => {
-          console.error('Error marking notification as read:', error);
+          // console.error('Error marking notification as read:', error);
           return of(null);
         }),
       )
@@ -145,7 +145,7 @@ export class NotificationService {
           this.notificationsSubject.next(updated);
         }),
         catchError((error) => {
-          console.error('Error marking all notifications as read:', error);
+          // console.error('Error marking all notifications as read:', error);
           return of(null);
         }),
       )
@@ -162,7 +162,7 @@ export class NotificationService {
       .pipe(
         map((response) => response.unreadCount),
         catchError((error) => {
-          console.error('Error getting unread count:', error);
+          // console.error('Error getting unread count:', error);
           return of(0);
         }),
       );
@@ -183,7 +183,7 @@ export class NotificationService {
         this.notificationsSubject.next(updated);
       }),
       catchError((error) => {
-        console.error('Error deleting notification:', error);
+        // console.error('Error deleting notification:', error);
         return of(null);
       }),
     );
@@ -245,40 +245,40 @@ export class NotificationService {
     console.log('=== STARTING NOTIFICATION API TEST ===');
 
     const currentUser = this.auth.getCurrentUser();
-    console.log('Current user:', currentUser);
+    // console.log('Current user:', currentUser);
 
     if (!currentUser) {
-      console.log('No user logged in!');
+      // console.log('No user logged in!');
       return;
     }
 
     const token = this.auth.getToken();
-    console.log('Token length:', token?.length);
+    // console.log('Token length:', token?.length);
 
     // Make direct API call to see raw response
     this.http.get<any>(this.apiUrl).subscribe({
       next: (response) => {
-        console.log('=== RAW API RESPONSE ===');
-        console.log('Response type:', typeof response);
-        console.log('Is array:', Array.isArray(response));
-        console.log('Response:', response);
+        // console.log('=== RAW API RESPONSE ===');
+        // console.log('Response type:', typeof response);
+        // console.log('Is array:', Array.isArray(response));
+        // console.log('Response:', response);
 
         if (Array.isArray(response)) {
-          console.log('Array length:', response.length);
+          // console.log('Array length:', response.length);
           if (response.length > 0) {
-            console.log('First item:', response[0]);
-            console.log('First item keys:', Object.keys(response[0]));
+            // console.log('First item:', response[0]);
+            // console.log('First item keys:', Object.keys(response[0]));
           }
         }
-        console.log('=== END RAW RESPONSE ===');
+        // console.log('=== END RAW RESPONSE ===');
       },
       error: (error) => {
-        console.log('=== API ERROR ===');
-        console.log('Status:', error.status);
-        console.log('Status text:', error.statusText);
-        console.log('Error:', error.error);
-        console.log('Message:', error.message);
-        console.log('=== END ERROR ===');
+        // console.log('=== API ERROR ===');
+        // console.log('Status:', error.status);
+        // console.log('Status text:', error.statusText);
+        // console.log('Error:', error.error);
+        // console.log('Message:', error.message);
+        // console.log('=== END ERROR ===');
       },
     });
   }

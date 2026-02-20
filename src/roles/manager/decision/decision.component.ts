@@ -19,13 +19,14 @@ export class DecisionComponent implements OnInit {
   selected: Idea | null = null;
   feedback = '';
   rejectionReason = '';
-  decision: 'Approve' | 'Reject' = 'Approve';
   reviews: Review[] = [];
   currentUserID = 0;
   currentUserName = '';
   comments: Comment[] = [];
   filterStatus: 'All' | 'Rejected' | 'UnderReview' | 'Approved' = 'All';
   isLoading = false;
+  isSubmittingFeedback = false;
+  isChangingStatus = false;
   showRejectionModal = false;
   canEditStatus = false; // Permission to edit status
   statusOptions: ('All' | 'Rejected' | 'UnderReview' | 'Approved')[] = [
@@ -136,7 +137,7 @@ export class DecisionComponent implements OnInit {
       return;
     }
 
-    // Submit just feedback without a decision
+    // Submit feedback without a decision - just feedback
     this.submitFeedback();
   }
 
@@ -146,44 +147,63 @@ export class DecisionComponent implements OnInit {
       return;
     }
 
-    // Call backend to save feedback as a comment
-    // The feedback goes to comments, not to reviews
-    const commentData = {
-      ideaId: this.selected.ideaID,
-      text: this.feedback.trim(),
-    };
+    this.isSubmittingFeedback = true;
 
-    this.ideaService.addComment(commentData).subscribe({
-      next: (response: any) => {
-        console.log('Feedback submitted successfully:', response);
-        alert('Feedback submitted successfully!');
-        this.feedback = '';
+    // Use new submitFeedback endpoint
+    this.reviewService
+      .submitFeedback(this.selected.ideaID, this.feedback.trim())
+      .subscribe({
+        next: (response: any) => {
+          console.log('Feedback submitted successfully:', response);
+          alert('Feedback submitted successfully!');
+          this.feedback = '';
+          this.isSubmittingFeedback = false;
 
-        // Reload comments
-        if (this.selected) {
-          this.ideaService.getCommentsForIdea(this.selected.ideaID).subscribe({
-            next: (comments: Comment[]) => {
-              this.comments = comments;
-            },
-          });
-        }
-      },
-      error: (error: any) => {
-        console.error('Error submitting feedback:', error);
-        const errorMsg =
-          error.error?.message || error.error || 'Failed to submit feedback.';
-        alert(errorMsg);
-      },
-    });
+          // Reload comments and reviews
+          if (this.selected) {
+            this.ideaService
+              .getCommentsForIdea(this.selected.ideaID)
+              .subscribe({
+                next: (comments: Comment[]) => {
+                  this.comments = comments;
+                },
+              });
+
+            this.reviewService
+              .getReviewsForIdea(this.selected.ideaID)
+              .subscribe({
+                next: (reviews: Review[]) => {
+                  this.reviews = reviews;
+                },
+              });
+          }
+        },
+        error: (error: any) => {
+          console.error('Error submitting feedback:', error);
+          this.isSubmittingFeedback = false;
+          const errorMsg =
+            error.error?.message || error.error || 'Failed to submit feedback.';
+          alert(errorMsg);
+        },
+      });
   }
 
   submitRejectionWithReason() {
+    if (!this.selected) {
+      return;
+    }
+
     if (!this.rejectionReason.trim()) {
       alert('Please provide a reason for rejection.');
       return;
     }
 
-    this.submitReviewWithDecision('Reject');
+    if (!confirm('Are you sure you want to reject this idea?')) {
+      return;
+    }
+
+    // Use new changeIdeaStatus endpoint with reviewComment
+    this.performStatusChange('Rejected');
   }
 
   submitReviewWithDecision(decision: 'Approve' | 'Reject') {
@@ -191,49 +211,22 @@ export class DecisionComponent implements OnInit {
       return;
     }
 
-    const rejectionReason =
-      decision === 'Reject' ? this.rejectionReason.trim() : undefined;
+    if (decision === 'Approve') {
+      if (!confirm('Are you sure you want to approve this idea?')) {
+        return;
+      }
 
-    this.reviewService
-      .submitReview(
-        this.selected.ideaID,
-        '', // No feedback needed for decision
-        decision,
-        rejectionReason,
-      )
-      .subscribe({
-        next: (response: any) => {
-          console.log('Review submitted successfully:', response);
-          alert(`Idea ${decision} successfully!`);
-          this.rejectionReason = '';
-          this.showRejectionModal = false;
-
-          // Reload ideas to update status
-          this.loadIdeasForReview();
-        },
-        error: (error: any) => {
-          console.error('Error submitting review:', error);
-          const errorMsg =
-            error.error?.message || error.error || 'Failed to submit review.';
-          alert(errorMsg);
-          this.showRejectionModal = false;
-        },
-      });
+      // Use new changeIdeaStatus endpoint
+      this.performStatusChange('Approved');
+    } else {
+      // Reject - handled separately in changeStatus
+      this.changeStatus('Rejected');
+    }
   }
 
   closeRejectionModal() {
     this.showRejectionModal = false;
     this.rejectionReason = '';
-  }
-
-  submitRejectionFromStatusChange() {
-    if (!this.rejectionReason.trim()) {
-      alert('Please provide a reason for rejection.');
-      return;
-    }
-
-    this.performStatusChange('Rejected');
-    this.closeRejectionModal();
   }
 
   changeStatus(status: 'UnderReview' | 'Approved' | 'Rejected') {
@@ -265,21 +258,41 @@ export class DecisionComponent implements OnInit {
   performStatusChange(status: 'UnderReview' | 'Approved' | 'Rejected') {
     if (!this.selected) return;
 
+    this.isChangingStatus = true;
+
+    // Pass rejectionReason only when status is Rejected
+    const reviewComment =
+      status === 'Rejected' ? this.rejectionReason : undefined;
+
     this.reviewService
-      .changeIdeaStatus(this.selected.ideaID, status)
+      .changeIdeaStatus(this.selected.ideaID, status, reviewComment)
       .subscribe({
         next: () => {
           console.log('Status changed successfully');
           alert(`Status changed to ${status} successfully!`);
+          this.isChangingStatus = false;
+
           if (this.selected) {
             this.selected.status = status;
+            if (status !== 'UnderReview') {
+              this.selected.reviewedByID = this.currentUserID;
+              this.selected.reviewedByName = this.currentUserName;
+            }
           }
+
+          this.showRejectionModal = false;
+          this.rejectionReason = '';
+
           // Reload ideas to reflect changes
           this.loadIdeasForReview();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error changing status:', error);
-          alert('Failed to change status. Please try again.');
+          this.isChangingStatus = false;
+          const errorMsg =
+            error.error?.message ||
+            'Failed to change status. Please try again.';
+          alert(errorMsg);
         },
       });
   }

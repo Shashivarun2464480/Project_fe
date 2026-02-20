@@ -30,16 +30,16 @@ export interface Idea {
   userVoteType?: 'Upvote' | 'Downvote'; // Type of vote the current user gave
   reviewedByID?: number; // ID of the manager who reviewed this idea
   reviewedByName?: string; // Name of the manager who reviewed this idea
+  reviewComment?: string; // Mandatory comment when idea is rejected
+  reviews?: Review[]; // Array of reviews for this idea
 }
 export interface Review {
-  reviewID?: number;
-  ideaID: number;
-  reviewerID: number;
+  reviewID?: number | string;
+  ideaID: number | string;
+  reviewerID?: number | string;
   reviewerName?: string;
   feedback: string;
-  decision: 'Approved' | 'Rejected';
   reviewDate?: string;
-  rejectionReason?: string; // Mandatory reason for rejection
 }
 
 export interface Comment {

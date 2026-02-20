@@ -104,6 +104,18 @@
               </div>
               {{ idea.downvotes || 0 }}
             </div>
+            <!-- Reviewer Info if Reviewed -->
+            <div
+              *ngIf="idea.status !== 'UnderReview' && idea.reviewedByName"
+              [ngClass]="{
+                'bg-green-50 text-green-700': idea.status === 'Approved',
+                'bg-red-50 text-red-700': idea.status === 'Rejected',
+              }"
+              class="ml-auto px-3 py-1 rounded-md text-sm font-semibold flex items-center gap-2"
+            >
+              <span class="text-xs opacity-75">Reviewed by:</span>
+              <span>{{ idea.reviewedByName }}</span>
+            </div>
           </div>
         </div>
 

@@ -28,16 +28,15 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
 
   ngOnInit(): void {
-    console.log('[NotificationComponent] Component initialized');
 
     // Subscribe to notifications from service
     this.subs.push(
       this.notificationService.notifications$.subscribe((notifications) => {
-        console.log(
-          '[NotificationComponent] Notifications updated:',
-          notifications?.length || 0,
-          'notifications',
-        );
+        // console.log(
+        //   '[NotificationComponent] Notifications updated:',
+        //   notifications?.length || 0,
+        //   'notifications',
+        // );
         this.notifications.set(notifications);
       }),
     );
@@ -45,7 +44,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     // Subscribe to unread count
     this.subs.push(
       this.notificationService.unreadCount$.subscribe((count) => {
-        console.log('[NotificationComponent] Unread count changed to:', count);
+        // console.log('[NotificationComponent] Unread count changed to:', count);
         this.unreadCount.set(count);
       }),
     );
@@ -71,18 +70,18 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.notificationService.markAllAsRead();
   }
 
-  getNotificationIcon(type: Notification['type']): string {
-    switch (type) {
-      case 'NewIdea':
-        return '💡';
-      case 'ReviewDecision':
-        return '✅';
-      case 'NewComment':
-        return '💬';
-      default:
-        return '🔔';
-    }
-  }
+  // getNotificationIcon(type: Notification['type']): string {
+  //   switch (type) {
+  //     case 'NewIdea':
+  //       return '💡';
+  //     case 'ReviewDecision':
+  //       return '✅';
+  //     case 'NewComment':
+  //       return '💬';
+  //     default:
+  //       return '🔔';
+  //   }
+  // }
 
   getRelativeTime(dateString: string): string {
     const date = new Date(dateString);
@@ -101,13 +100,13 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   // Debug method - make accessible via console
   debugNotifications(): void {
-    console.log('=== NOTIFICATION COMPONENT DEBUG ===');
-    console.log('Notifications:', this.notifications());
-    console.log('Unread count:', this.unreadCount());
-    console.log('Dropdown open:', this.notificationDropdownOpen());
+    // console.log('=== NOTIFICATION COMPONENT DEBUG ===');
+    // console.log('Notifications:', this.notifications());
+    // console.log('Unread count:', this.unreadCount());
+    // console.log('Dropdown open:', this.notificationDropdownOpen());
     // Call service debug
     this.notificationService.testApiCall();
-    console.log('=== END DEBUG ===');
+    // console.log('=== END DEBUG ===');
   }
 
   @HostListener('document:keydown.escape')
