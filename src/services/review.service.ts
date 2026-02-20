@@ -16,11 +16,13 @@ export class ReviewService {
     ideaID: number | string,
     feedback: string,
     decision: 'Approve' | 'Reject',
+    rejectionReason?: string,
   ): Observable<any> {
     const payload = {
       ideaId: ideaID,
       feedback: feedback,
       decision: decision,
+      rejectionReason: rejectionReason,
     };
     return this.http.post(`${this.reviewApiUrl}/submit`, payload).pipe(
       tap((response) => {
@@ -107,6 +109,8 @@ export class ReviewService {
           category: idea.categoryName || idea.category || '',
           upvotes: idea.upvotes || 0,
           downvotes: idea.downvotes || 0,
+          reviewedByID: idea.reviewedByID || idea.reviewedById,
+          reviewedByName: idea.reviewedByName || idea.reviewedByUserName,
         })),
       ),
     );
@@ -143,6 +147,25 @@ export class ReviewService {
     return this.http.get<any>(`${this.reviewApiUrl}/ideas/${ideaID}`).pipe(
       tap((response) => {
         console.log('Idea with full details:', response);
+      }),
+    );
+  }
+
+  // Get idea with reviewer information (when Approved/Rejected)
+  getIdeaWithReviewerInfo(ideaID: number | string): Observable<any> {
+    return this.http.get<any>(`${this.reviewApiUrl}/ideas/${ideaID}`).pipe(
+      tap((response) => {
+        console.log('Idea with reviewer info - Raw response:', response);
+      }),
+      map((idea) => {
+        const mapped = {
+          ...idea,
+          ideaID: idea.ideaId || idea.ideaID,
+          reviewedByID: idea.reviewedByUserId || idea.reviewedByID,
+          reviewedByName: idea.reviewedByUserName || idea.reviewedByName,
+        };
+        console.log('Idea with reviewer info - Mapped:', mapped);
+        return mapped;
       }),
     );
   }
