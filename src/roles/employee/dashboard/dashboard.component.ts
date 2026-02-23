@@ -109,9 +109,11 @@ export class DashboardComponent implements OnInit {
           if (this.selected && this.selected.ideaID === idea.ideaID) {
             this.selected.reviewedByID = ideaWithReviewer.reviewedByID;
             this.selected.reviewedByName = ideaWithReviewer.reviewedByName;
+            this.selected.reviewComment = ideaWithReviewer.reviewComment;
             console.log('Updated selected idea with:', {
               reviewedByID: this.selected.reviewedByID,
               reviewedByName: this.selected.reviewedByName,
+              reviewComment: this.selected.reviewComment,
             });
           }
         },
