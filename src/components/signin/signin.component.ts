@@ -31,8 +31,8 @@ export class SigninComponent {
     this.form = this.fb.group({
       email: ['', [
         Validators.required,
-        Validators.email,
         Validators.maxLength(100),
+        Validators.pattern('^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$'),
       ]],
       password: ['', [
         Validators.required,
@@ -117,8 +117,8 @@ export class SigninComponent {
     if (field.errors['required']) {
       return fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' is required.';
     }
-    if (field.errors['email']) {
-      return 'Please enter a valid email address.';
+    if (field.errors['email'] || field.errors['pattern']) {
+      return 'Please enter a valid email address (e.g. user@example.com).';
     }
     if (field.errors['minlength']) {
       return `Minimum ${field.errors['minlength'].requiredLength} characters required.`;

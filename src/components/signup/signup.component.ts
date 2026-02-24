@@ -41,8 +41,8 @@ export class SignupComponent {
         ]],
         email: ['', [
           Validators.required,
-          Validators.email,
           Validators.maxLength(100),
+          Validators.pattern('^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$'),
         ]],
         role: ['', Validators.required],
         password: ['', [
@@ -155,8 +155,8 @@ export class SignupComponent {
     if (field.errors['maxlength']) {
       return `Maximum ${field.errors['maxlength'].requiredLength} characters allowed.`;
     }
-    if (field.errors['email']) {
-      return 'Please enter a valid email address.';
+    if (field.errors['email'] || (field.errors['pattern'] && fieldName === 'email')) {
+      return 'Please enter a valid email address (e.g. user@example.com).';
     }
     if (field.errors['pattern'] && fieldName === 'name') {
       return 'Name can only contain letters and spaces.';
