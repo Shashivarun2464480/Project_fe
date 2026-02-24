@@ -22,7 +22,6 @@
         class="text-sm font-medium bg-transparent border-none focus:ring-0 cursor-pointer text-(--blue-500)"
       >
         <option value="All">All Ideas</option>
-        <option value="Rejected">Rejected</option>
         <option value="UnderReview">Under Review</option>
         <option value="Approved">Approved</option>
         <option value="Rejected">Rejected</option>
@@ -107,7 +106,6 @@
               <span
                 class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"
                 [ngClass]="{
-                    'bg-gray-100 text-gray-700': idea.status === 'Rejected',
                     'bg-(--blue-100) text-(--blue-500)': idea.status === 'UnderReview',
                     'bg-green-100 text-green-700': idea.status === 'Approved',
                     'bg-red-100 text-red-700': idea.status === 'Rejected'
@@ -120,17 +118,7 @@
               <span class="text-sm font-medium text-gray-500"
                 >{{ idea.category }}</span
               >
-              <!-- Manager Name Badge -->
-              <span
-                *ngIf="idea.status !== 'UnderReview' && idea.reviewedByName"
-                class="text-xs font-semibold px-2 py-0.5 rounded-full ml-auto"
-                [ngClass]="{
-                  'bg-green-100 text-green-700': idea.status === 'Approved',
-                  'bg-red-100 text-red-700': idea.status === 'Rejected',
-                }"
-              >
-                {{ idea.reviewedByName }}
-              </span>
+
             </div>
             <h3 class="text-xl font-bold text-gray-900">{{ idea.title }}</h3>
             <div class="mt-1 text-sm text-gray-500">
