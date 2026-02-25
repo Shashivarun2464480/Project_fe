@@ -149,13 +149,7 @@ export class SignupComponent {
     if (field.errors['required']) {
       return fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' is required.';
     }
-    if (field.errors['minlength']) {
-      return `Minimum ${field.errors['minlength'].requiredLength} characters required.`;
-    }
-    if (field.errors['maxlength']) {
-      return `Maximum ${field.errors['maxlength'].requiredLength} characters allowed.`;
-    }
-    if (field.errors['email'] || (field.errors['pattern'] && fieldName === 'email')) {
+    if (field.errors['pattern'] && fieldName === 'email') {
       return 'Please enter a valid email address (e.g. user@example.com).';
     }
     if (field.errors['pattern'] && fieldName === 'name') {
@@ -163,6 +157,12 @@ export class SignupComponent {
     }
     if (field.errors['pattern'] && fieldName === 'password') {
       return 'Password must have at least 1 uppercase letter, 1 number, and 1 special character (!@#$%^&*).';
+    }
+    if (field.errors['minlength']) {
+      return `Minimum ${field.errors['minlength'].requiredLength} characters required.`;
+    }
+    if (field.errors['maxlength']) {
+      return `Maximum ${field.errors['maxlength'].requiredLength} characters allowed.`;
     }
     if (field.errors['notMatched']) {
       return 'Passwords do not match.';
