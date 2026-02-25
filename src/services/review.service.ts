@@ -93,9 +93,9 @@ export class ReviewService {
    */
   getReviewById(reviewId: string | number): Observable<Review> {
     return this.http.get<any>(`${this.reviewApiUrl}/${reviewId}`).pipe(
-      tap((review) => {
-        console.log('Review details:', review);
-      }),
+      // tap((review) => {
+      //   console.log('Review details:', review);
+      // }),
       map((review) => this.mapApiReviewToLocal(review)),
     );
   }
@@ -106,9 +106,8 @@ export class ReviewService {
    */
   getReviewsForIdea(ideaID: string | number): Observable<Review[]> {
     return this.http.get<any[]>(`${this.reviewApiUrl}/idea/${ideaID}`).pipe(
-      tap((reviews) => {
-        console.log('Reviews for idea:', reviews);
-      }),
+      // tap((reviews) => {
+      // }),
       map((reviews) => reviews.map((r) => this.mapApiReviewToLocal(r))),
     );
   }
@@ -198,25 +197,16 @@ export class ReviewService {
   submitReview(
     ideaID: number | string,
     feedback: string,
-    decision: 'Approve' | 'Reject',
-    rejectionReason?: string,
+
   ): Observable<any> {
-    // Use submitFeedback and changeIdeaStatus instead
-    console.warn(
-      'submitReview is deprecated. Use submitFeedback and changeIdeaStatus instead.',
-    );
     return this.submitFeedback(ideaID, feedback);
   }
 
   approveIdea(ideaID: number | string): Observable<any> {
-    // Use changeIdeaStatus instead
-    console.warn('approveIdea is deprecated. Use changeIdeaStatus instead.');
     return this.changeIdeaStatus(ideaID, 'Approved');
   }
 
   rejectIdea(ideaID: number | string, reason: string): Observable<any> {
-    // Use changeIdeaStatus instead
-    console.warn('rejectIdea is deprecated. Use changeIdeaStatus instead.');
     return this.changeIdeaStatus(ideaID, 'Rejected', reason);
   }
 
@@ -224,8 +214,6 @@ export class ReviewService {
     ideaID: number | string,
     status: 'Rejected' | 'UnderReview' | 'Approved',
   ) {
-    // Use changeIdeaStatus instead
-    console.warn('setIdeaStatus is deprecated. Use changeIdeaStatus instead.');
     return this.changeIdeaStatus(ideaID, status);
   }
 
@@ -233,7 +221,7 @@ export class ReviewService {
   getIdeaWithReviewerInfo(ideaID: number | string): Observable<any> {
     return this.http.get<any>(`${this.reviewApiUrl}/ideas/${ideaID}`).pipe(
       tap((response) => {
-        console.log('Idea with reviewer info - Raw response:', response);
+        // console.log('Idea with reviewer info - Raw response:', response);
       }),
       map((idea) => {
         const mapped = {
@@ -242,7 +230,6 @@ export class ReviewService {
           reviewedByID: idea.reviewedByUserId || idea.reviewedByID,
           reviewedByName: idea.reviewedByUserName || idea.reviewedByName,
         };
-        console.log('Idea with reviewer info - Mapped:', mapped);
         return mapped;
       }),
     );
