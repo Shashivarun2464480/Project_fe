@@ -7,77 +7,139 @@
       toastType === 'success'
         ? 'app-toast--success'
         : toastType === 'info'
-        ? 'app-toast--info'
-        : 'app-toast--error'
+          ? 'app-toast--info'
+          : 'app-toast--error',
     ]"
     [style.top.px]="toastOffset"
   >
     {{ toastMessage }}
   </div>
-  <div class="absolute inset-0 bg-linear-to-br from-indigo-100/70 via-white to-slate-100 pointer-events-none"></div>
+  <div
+    class="absolute inset-0 bg-linear-to-br from-indigo-100/70 via-white to-slate-100 pointer-events-none"
+  ></div>
 
   <div class="container mx-auto max-w-6xl px-4 pt-20 pb-14 relative space-y-8">
     <!-- Hero (inline, no card) -->
-    <section class="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
+    <section
+      class="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between"
+    >
       <div class="space-y-3 max-w-2xl">
-         <h1 class="text-4xl font-black tracking-tight text-gray-900 md:text-5xl">Manager Decision Dashboard</h1>
+        <h1
+          class="text-4xl font-black tracking-tight text-gray-900 md:text-5xl"
+        >
+          Manager Decision
+        </h1>
         <p class="text-sm md:text-base text-gray-600">
-          Keep the review queue moving with focused context and crisp status controls.
+          Keep the review queue moving with focused context and crisp
         </p>
       </div>
 
       <!-- ...existing code... -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto items-stretch">
-  <div class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full">
-    <div class="flex items-center gap-3">
-      <span class="inline-flex h-2.5 w-2.5 rounded-full bg-[#2563eb] shadow-[0_0_0_6px_rgba(37,99,235,0.14)]"></span>
-      <div>
-        <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap">Total ideas</p>
-        <p class="text-2xl font-black text-gray-900">{{ totalIdeasCount }}</p>
+      <div
+        class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto items-stretch"
+      >
+        <div
+          class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="inline-flex h-2.5 w-2.5 rounded-full bg-[#2563eb] shadow-[0_0_0_6px_rgba(37,99,235,0.14)]"
+            ></span>
+            <div>
+              <p
+                class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap"
+              >
+                Total ideas
+              </p>
+              <p class="text-2xl font-black text-gray-900">
+                {{ totalIdeasCount }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="inline-flex h-2.5 w-2.5 rounded-full bg-[#2563eb] shadow-[0_0_0_6px_rgba(37,99,235,0.18)]"
+            ></span>
+            <div>
+              <p
+                class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap"
+              >
+                Under review
+              </p>
+              <p class="text-2xl font-black text-gray-900">
+                {{ underReviewCount }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="inline-flex h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_6px_rgba(34,197,94,0.15)]"
+            ></span>
+            <div>
+              <p
+                class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap"
+              >
+                Approved
+              </p>
+              <p class="text-2xl font-black text-gray-900">
+                {{ approvedCount }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              class="inline-flex h-2.5 w-2.5 rounded-full bg-[#ef4444] shadow-[0_0_0_6px_rgba(239,68,68,0.15)]"
+            ></span>
+            <div>
+              <p
+                class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap"
+              >
+                Rejected
+              </p>
+              <p class="text-2xl font-black text-gray-900">
+                {{ rejectedCount }}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full">
-    <div class="flex items-center gap-3">
-      <span class="inline-flex h-2.5 w-2.5 rounded-full bg-[#2563eb] shadow-[0_0_0_6px_rgba(37,99,235,0.18)]"></span>
-      <div>
-        <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap">Under review</p>
-        <p class="text-2xl font-black text-gray-900">{{ underReviewCount }}</p>
-      </div>
-    </div>
-  </div>
-  <div class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full">
-    <div class="flex items-center gap-3">
-      <span class="inline-flex h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_6px_rgba(34,197,94,0.15)]"></span>
-      <div>
-        <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap">Approved</p>
-        <p class="text-2xl font-black text-gray-900">{{ approvedCount }}</p>
-      </div>
-    </div>
-  </div>
-  <div class="rounded-2xl border border-(--blue-100) bg-white/90 p-4 shadow-sm backdrop-blur h-full">
-    <div class="flex items-center gap-3">
-      <span class="inline-flex h-2.5 w-2.5 rounded-full bg-[#ef4444] shadow-[0_0_0_6px_rgba(239,68,68,0.15)]"></span>
-      <div>
-        <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap">Rejected</p>
-        <p class="text-2xl font-black text-gray-900">{{ rejectedCount }}</p>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- ...existing code... -->
+      <!-- ...existing code... -->
     </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Sidebar: Ideas List -->
       <div class="lg:col-span-5 xl:col-span-4">
-        <div class="rounded-2xl bg-white shadow-xl border border-slate-200/80 overflow-hidden backdrop-blur h-full flex flex-col">
-          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200/80">
+        <div
+          class="rounded-2xl bg-white shadow-xl border border-slate-200/80 overflow-hidden backdrop-blur h-full flex flex-col"
+        >
+          <div
+            class="flex items-center justify-between px-5 py-4 border-b border-slate-200/80"
+          >
             <div>
-              <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Review queue</p>
-              <h2 class="text-lg font-bold text-slate-900">Ideas to evaluate</h2>
+              <p
+                class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"
+              >
+                Review queue
+              </p>
+              <h2 class="text-lg font-bold text-slate-900">
+                Ideas to evaluate
+              </h2>
             </div>
-            <span class="inline-flex h-8 min-w-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">
+            <span
+              class="inline-flex h-8 min-w-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold"
+            >
               {{ filteredIdeas.length }}
             </span>
           </div>
@@ -88,21 +150,35 @@
               *ngFor="let status of statusOptions"
               (click)="filterByStatus(status)"
               class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-700"
-              [ngClass]="{ 'bg-linear-to-r from-indigo-500 to-indigo-600 text-white border-transparent shadow-md shadow-indigo-200': filterStatus === status }"
+              [ngClass]="{
+                'bg-linear-to-r from-indigo-500 to-indigo-600 text-white border-transparent shadow-md shadow-indigo-200':
+                  filterStatus === status,
+              }"
             >
-              {{ status === 'UnderReview' ? 'Under Review' : status }}
+              {{ status === "UnderReview" ? "Under Review" : status }}
             </button>
           </div>
 
           <!-- Loading State -->
-          <div *ngIf="isLoading" class="px-5 py-10 text-center text-sm text-slate-500">
-            <div class="mx-auto h-8 w-8 border-2 border-slate-200 border-t-indigo-500 rounded-full animate-spin"></div>
+          <div
+            *ngIf="isLoading"
+            class="px-5 py-10 text-center text-sm text-slate-500"
+          >
+            <div
+              class="mx-auto h-8 w-8 border-2 border-slate-200 border-t-indigo-500 rounded-full animate-spin"
+            ></div>
             <p class="mt-2">Loading ideas...</p>
           </div>
 
           <!-- Ideas List -->
-          <div *ngIf="!isLoading" class="space-y-3 px-3 pb-4 max-h-[70vh] overflow-y-auto flex-1">
-            <div *ngIf="filteredIdeas.length === 0" class="px-4 py-10 text-center text-sm text-slate-500 border border-dashed border-slate-200 rounded-xl">
+          <div
+            *ngIf="!isLoading"
+            class="space-y-3 px-3 pb-4 max-h-[70vh] overflow-y-auto flex-1"
+          >
+            <div
+              *ngIf="filteredIdeas.length === 0"
+              class="px-4 py-10 text-center text-sm text-slate-500 border border-dashed border-slate-200 rounded-xl"
+            >
               No ideas found for "{{ filterStatus }}" status.
             </div>
 
@@ -110,25 +186,37 @@
               *ngFor="let idea of filteredIdeas"
               (click)="select(idea)"
               class="rounded-xl border border-slate-200/80 bg-white px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md cursor-pointer"
-              [ngClass]="{ 'border-indigo-300 ring-1 ring-indigo-200 shadow-lg': selected?.ideaID === idea.ideaID }"
+              [ngClass]="{
+                'border-indigo-300 ring-1 ring-indigo-200 shadow-lg':
+                  selected?.ideaID === idea.ideaID,
+              }"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">
-                  <p class="text-sm font-semibold text-slate-900 line-clamp-1">{{ idea.title }}</p>
-                  <p class="text-xs text-slate-600 line-clamp-2">{{ idea.description }}</p>
+                  <p class="text-sm font-semibold text-slate-900 line-clamp-1">
+                    {{ idea.title }}
+                  </p>
+                  <p class="text-xs text-slate-600 line-clamp-2">
+                    {{ idea.description }}
+                  </p>
                 </div>
                 <span
                   class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide border"
                   [ngClass]="{
-                    'bg-emerald-50 text-emerald-700 border-emerald-200': idea.status === 'Approved',
-                    'bg-rose-50 text-rose-700 border-rose-200': idea.status === 'Rejected',
-                    'bg-indigo-50 text-indigo-700 border-indigo-200': idea.status === 'UnderReview'
+                    'bg-emerald-50 text-emerald-700 border-emerald-200':
+                      idea.status === 'Approved',
+                    'bg-rose-50 text-rose-700 border-rose-200':
+                      idea.status === 'Rejected',
+                    'bg-indigo-50 text-indigo-700 border-indigo-200':
+                      idea.status === 'UnderReview',
                   }"
                 >
                   {{ idea.status }}
                 </span>
               </div>
-              <div class="mt-3 flex items-center gap-2 text-[11px] text-slate-500">
+              <div
+                class="mt-3 flex items-center gap-2 text-[11px] text-slate-500"
+              >
                 <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
                 <span>Tap to open details</span>
               </div>
@@ -144,46 +232,84 @@
           *ngIf="selected; else noSelection"
         >
           <!-- Header -->
-          <div class="sticky top-0 z-10 border-b border-slate-200/80 bg-white/90 backdrop-blur px-6 py-5 flex items-start justify-between gap-4">
+          <div
+            class="sticky top-0 z-10 border-b border-slate-200/80 bg-white/90 backdrop-blur px-6 py-5 flex items-start justify-between gap-4"
+          >
             <div class="space-y-2">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Currently viewing</p>
-              <h1 class="text-2xl font-black leading-tight text-slate-900">{{ selected.title }}</h1>
-              <div class="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+              <p
+                class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"
+              >
+                Currently viewing
+              </p>
+              <h1 class="text-2xl font-black leading-tight text-slate-900">
+                {{ selected.title }}
+              </h1>
+              <div
+                class="flex flex-wrap items-center gap-2 text-sm text-slate-600"
+              >
                 <span
                   class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide border"
                   [ngClass]="{
-                    'bg-emerald-50 text-emerald-700 border-emerald-200': selected.status === 'Approved',
-                    'bg-rose-50 text-rose-700 border-rose-200': selected.status === 'Rejected',
-                    'bg-indigo-50 text-indigo-700 border-indigo-200': selected.status === 'UnderReview'
+                    'bg-emerald-50 text-emerald-700 border-emerald-200':
+                      selected.status === 'Approved',
+                    'bg-rose-50 text-rose-700 border-rose-200':
+                      selected.status === 'Rejected',
+                    'bg-indigo-50 text-indigo-700 border-indigo-200':
+                      selected.status === 'UnderReview',
                   }"
                 >
                   {{ selected.status }}
                 </span>
                 <span class="w-2 h-px bg-slate-200"></span>
-                <span class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Author</span>
-                <span class="font-semibold text-indigo-700">{{ selected.authorName || 'User #' + selected.userID }}</span>
+                <span
+                  class="text-[11px] font-semibold uppercase tracking-wide text-slate-500"
+                  >Author</span
+                >
+                <span class="font-semibold text-indigo-700">{{
+                  selected.authorName || "User #" + selected.userID
+                }}</span>
                 <span class="w-2 h-px bg-slate-200"></span>
-                <span class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Votes</span>
+                <span
+                  class="text-[11px] font-semibold uppercase tracking-wide text-slate-500"
+                  >Votes</span
+                >
                 <span class="flex items-center gap-3 font-bold text-sm">
-                  <span class="text-green-600">▲ {{ selected.upvotes || 0 }}</span>
+                  <span class="text-green-600"
+                    >▲ {{ selected.upvotes || 0 }}</span
+                  >
                   <span class="text-slate-300">|</span>
-                  <span class="text-red-600">▼ {{ selected.downvotes || 0 }}</span>
+                  <span class="text-red-600"
+                    >▼ {{ selected.downvotes || 0 }}</span
+                  >
                 </span>
               </div>
             </div>
-            <div *ngIf="selected.status !== 'UnderReview'" class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-semibold text-slate-700">
-              Reviewed by {{ selected.reviewedByName || 'Manager' }}
+            <div
+              *ngIf="selected.status !== 'UnderReview'"
+              class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-semibold text-slate-700"
+            >
+              Reviewed by {{ selected.reviewedByName || "Manager" }}
             </div>
           </div>
 
           <div class="p-6 space-y-6">
             <!-- Description -->
-            <div class="rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3">
+            <div
+              class="rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3"
+            >
               <div class="flex items-center gap-2 mb-2">
                 <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
-                <h4 class="text-xs font-black uppercase tracking-[0.16em] text-slate-700">Description</h4>
+                <h4
+                  class="text-xs font-black uppercase tracking-[0.16em] text-slate-700"
+                >
+                  Description
+                </h4>
               </div>
-              <p class="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{{ selected.description }}</p>
+              <p
+                class="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed"
+              >
+                {{ selected.description }}
+              </p>
             </div>
 
             <!-- Change Status Section -->
@@ -193,27 +319,42 @@
             >
               <div class="flex items-center gap-2 mb-2">
                 <span class="h-2 w-2 rounded-full bg-amber-500"></span>
-                <h4 class="text-xs font-black uppercase tracking-[0.16em] text-slate-800">Change idea status</h4>
+                <h4
+                  class="text-xs font-black uppercase tracking-[0.16em] text-slate-800"
+                >
+                  Change idea status
+                </h4>
               </div>
-              <p class="text-sm text-slate-700 mb-3">Current status: <span class="font-bold text-slate-900">{{ selected.status }}</span></p>
+              <p class="text-sm text-slate-700 mb-3">
+                Current status:
+                <span class="font-bold text-slate-900">{{
+                  selected.status
+                }}</span>
+              </p>
               <div class="flex flex-wrap gap-2">
                 <button
                   (click)="changeStatus('Rejected')"
-                  [disabled]="selected.status === 'Rejected' || isChangingStatus"
+                  [disabled]="
+                    selected.status === 'Rejected' || isChangingStatus
+                  "
                   class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition disabled:opacity-50"
                 >
                   Set to Rejected
                 </button>
                 <button
                   (click)="changeStatus('UnderReview')"
-                  [disabled]="selected.status === 'UnderReview' || isChangingStatus"
+                  [disabled]="
+                    selected.status === 'UnderReview' || isChangingStatus
+                  "
                   class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-indigo-200 hover:text-indigo-700 transition disabled:opacity-50"
                 >
                   Set to Under Review
                 </button>
                 <button
                   (click)="changeStatus('Approved')"
-                  [disabled]="selected.status === 'Approved' || isChangingStatus"
+                  [disabled]="
+                    selected.status === 'Approved' || isChangingStatus
+                  "
                   class="rounded-lg bg-linear-to-r from-indigo-500 to-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-indigo-200 transition hover:shadow-lg disabled:opacity-50"
                 >
                   Set to Approved
@@ -221,22 +362,75 @@
               </div>
             </div>
 
+            <!-- Review Decision Box (read-only: shows reviewer info and decision) -->
             <div
-              *ngIf="!canEditStatus"
-              class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+              *ngIf="
+                !canEditStatus && selected && selected.status !== 'UnderReview'
+              "
+              class="rounded-xl border-2 px-4 py-4"
+              [ngClass]="{
+                'bg-emerald-50 border-emerald-200':
+                  selected.status === 'Approved',
+                'bg-rose-50 border-rose-200': selected.status === 'Rejected',
+              }"
             >
-              <p class="text-sm text-slate-700">
-                <span class="font-bold">Read-only mode:</span> This idea was reviewed by
-                <span class="font-semibold text-slate-900">{{ selected.reviewedByName || 'Another Manager' }}</span>.
-                Only the reviewer can change the status.
-              </p>
+              <div class="flex items-center gap-2 mb-2">
+                <span
+                  class="text-sm font-semibold"
+                  [ngClass]="{
+                    'text-emerald-700': selected.status === 'Approved',
+                    'text-rose-700': selected.status === 'Rejected',
+                  }"
+                >
+                  Reviewed by:
+                </span>
+                <span
+                  class="text-sm font-bold"
+                  [ngClass]="{
+                    'text-emerald-800': selected.status === 'Approved',
+                    'text-rose-800': selected.status === 'Rejected',
+                  }"
+                >
+                  {{ selected.reviewedByName || "Manager" }}
+                </span>
+              </div>
+              <div
+                class="text-xs font-medium mb-3"
+                [ngClass]="{
+                  'text-emerald-600': selected.status === 'Approved',
+                  'text-rose-600': selected.status === 'Rejected',
+                }"
+              >
+                Status: {{ selected.status }}
+              </div>
+              <!-- Rejection Reason (only for Rejected ideas) -->
+              <div
+                *ngIf="selected.status === 'Rejected' && selected.reviewComment"
+              >
+                <div
+                  class="text-xs font-semibold text-rose-700 mb-1 uppercase tracking-wide"
+                >
+                  Rejection Reason:
+                </div>
+                <div
+                  class="text-sm text-rose-700 bg-rose-100/50 p-3 rounded border border-rose-200 italic"
+                >
+                  {{ selected.reviewComment }}
+                </div>
+              </div>
             </div>
 
             <!-- Feedback Section -->
-            <div class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
+            <div
+              class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+            >
               <div class="flex items-center gap-2 mb-2">
                 <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
-                <h4 class="text-xs font-black uppercase tracking-[0.16em] text-slate-800">Feedback</h4>
+                <h4
+                  class="text-xs font-black uppercase tracking-[0.16em] text-slate-800"
+                >
+                  Feedback
+                </h4>
               </div>
 
               <div class="mb-3">
@@ -253,24 +447,39 @@
                 [disabled]="!feedback.trim() || isSubmittingFeedback"
                 class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 disabled:opacity-50"
               >
-                {{ isSubmittingFeedback ? 'Submitting...' : 'Submit Feedback' }}
+                {{ isSubmittingFeedback ? "Submitting..." : "Submit Feedback" }}
               </button>
             </div>
 
             <!-- History -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Comments -->
-              <div class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
+              <div
+                class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+              >
                 <div class="flex items-center gap-2 mb-2">
                   <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
-                  <h4 class="text-xs font-black uppercase tracking-[0.16em] text-slate-800">Comments</h4>
+                  <h4
+                    class="text-xs font-black uppercase tracking-[0.16em] text-slate-800"
+                  >
+                    Comments
+                  </h4>
                 </div>
-                <div *ngIf="!comments.length" class="text-xs text-slate-500">No comments yet.</div>
+                <div *ngIf="!comments.length" class="text-xs text-slate-500">
+                  No comments yet.
+                </div>
                 <div class="space-y-3" *ngIf="comments.length">
-                  <div *ngFor="let c of comments" class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                    <div class="flex items-center justify-between text-[12px] text-slate-600 mb-1">
-                      <span class="font-semibold text-slate-800">{{ c.userName || 'User' }}</span>
-                      <span>{{ c.createdDate | date: 'shortDate' }}</span>
+                  <div
+                    *ngFor="let c of comments"
+                    class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+                  >
+                    <div
+                      class="flex items-center justify-between text-[12px] text-slate-600 mb-1"
+                    >
+                      <span class="font-semibold text-slate-800">{{
+                        c.userName || "User"
+                      }}</span>
+                      <span>{{ c.createdDate | date: "shortDate" }}</span>
                     </div>
                     <p class="text-sm text-slate-700">{{ c.text }}</p>
                   </div>
@@ -278,17 +487,32 @@
               </div>
 
               <!-- Past Reviews -->
-              <div class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
+              <div
+                class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+              >
                 <div class="flex items-center gap-2 mb-2">
                   <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
-                  <h4 class="text-xs font-black uppercase tracking-[0.16em] text-slate-800">Review history</h4>
+                  <h4
+                    class="text-xs font-black uppercase tracking-[0.16em] text-slate-800"
+                  >
+                    Review history
+                  </h4>
                 </div>
-                <div *ngIf="!reviews.length" class="text-xs text-slate-500">No previous reviews.</div>
+                <div *ngIf="!reviews.length" class="text-xs text-slate-500">
+                  No previous reviews.
+                </div>
                 <div class="space-y-3" *ngIf="reviews.length">
-                  <div *ngFor="let r of reviews" class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                    <div class="flex items-center justify-between text-[12px] text-slate-600 mb-1">
-                      <span class="font-semibold text-slate-800">{{ r.reviewerName || 'Manager' }}</span>
-                      <span>{{ r.reviewDate | date: 'short' }}</span>
+                  <div
+                    *ngFor="let r of reviews"
+                    class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+                  >
+                    <div
+                      class="flex items-center justify-between text-[12px] text-slate-600 mb-1"
+                    >
+                      <span class="font-semibold text-slate-800">{{
+                        r.reviewerName || "Manager"
+                      }}</span>
+                      <span>{{ r.reviewDate | date: "short" }}</span>
                     </div>
                     <p class="text-sm text-slate-700">{{ r.feedback }}</p>
                   </div>
@@ -299,8 +523,12 @@
         </div>
 
         <ng-template #noSelection>
-          <div class="rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center text-slate-600 shadow-sm h-full min-h-96 flex flex-col justify-center">
-            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+          <div
+            class="rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center text-slate-600 shadow-sm h-full min-h-96 flex flex-col justify-center"
+          >
+            <div
+              class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400"
+            >
               <svg
                 class="h-7 w-7"
                 fill="none"
@@ -316,7 +544,9 @@
               </svg>
             </div>
             <h3 class="text-lg font-bold text-slate-900">No idea selected</h3>
-            <p class="text-sm text-slate-600">Pick an idea from the list to review.</p>
+            <p class="text-sm text-slate-600">
+              Pick an idea from the list to review.
+            </p>
           </div>
         </ng-template>
       </div>
@@ -328,14 +558,22 @@
     *ngIf="showRejectionModal"
     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
   >
-    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-slate-200 p-6" (click)="$event.stopPropagation()">
+    <div
+      class="w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-slate-200 p-6"
+      (click)="$event.stopPropagation()"
+    >
       <div class="mb-4">
         <h3 class="text-xl font-bold text-slate-900">Rejection Reason</h3>
-        <p class="text-sm text-slate-600">Please provide a detailed reason for rejecting this idea. This is mandatory.</p>
+        <p class="text-sm text-slate-600">
+          Please provide a detailed reason for rejecting this idea. This is
+          mandatory.
+        </p>
       </div>
 
       <div class="mb-4">
-        <label class="block text-sm font-bold text-slate-800 mb-2">Reason for rejection</label>
+        <label class="block text-sm font-bold text-slate-800 mb-2"
+          >Reason for rejection</label
+        >
         <textarea
           [(ngModel)]="rejectionReason"
           rows="4"
@@ -357,7 +595,7 @@
           [disabled]="!rejectionReason.trim() || isChangingStatus"
           class="rounded-lg bg-linear-to-r from-rose-500 to-rose-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-rose-200 hover:shadow-lg transition disabled:opacity-50"
         >
-          {{ isChangingStatus ? 'Rejecting...' : 'Rejection' }}
+          {{ isChangingStatus ? "Rejecting..." : "Rejection" }}
         </button>
       </div>
     </div>
@@ -375,8 +613,12 @@
       <div class="flex items-start justify-between gap-3">
         <div>
           <h3 class="text-xl font-bold text-slate-900">Confirm Rejection</h3>
-          <p class="text-sm text-slate-600">Are you sure you want to reject this idea? Reason provided:</p>
-          <p class="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 whitespace-pre-wrap">
+          <p class="text-sm text-slate-600">
+            Are you sure you want to reject this idea? Reason provided:
+          </p>
+          <p
+            class="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 whitespace-pre-wrap"
+          >
             {{ rejectionReason }}
           </p>
         </div>
@@ -402,7 +644,7 @@
           (click)="performStatusChange('Rejected')"
           [disabled]="isChangingStatus"
         >
-          {{ isChangingStatus ? 'Rejecting...' : 'Confirm' }}
+          {{ isChangingStatus ? "Rejecting..." : "Confirm" }}
         </button>
       </div>
     </div>
@@ -421,21 +663,41 @@
       class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-(--blue-100) animate-fade-in"
       (click)="$event.stopPropagation()"
     >
-      <div class="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-(--blue-400) via-(--blue-500) to-(--blue-600)"></div>
+      <div
+        class="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-(--blue-400) via-(--blue-500) to-(--blue-600)"
+      ></div>
       <div class="p-6 sm:p-7">
         <div class="flex items-start gap-3">
-          <div class="w-11 h-11 rounded-full bg-(--blue-50) border border-(--blue-100) flex items-center justify-center text-(--blue-600)">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 4h.01M4.93 4.93a10 10 0 1114.14 0L12 2 4.93 4.93z" />
+          <div
+            class="w-11 h-11 rounded-full bg-(--blue-50) border border-(--blue-100) flex items-center justify-center text-(--blue-600)"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 4h.01M4.93 4.93a10 10 0 1114.14 0L12 2 4.93 4.93z"
+              />
             </svg>
           </div>
           <div class="space-y-1">
-            <h3 class="text-xl font-bold text-gray-900">{{ pendingStatus === 'Approved' ? 'Approve this idea?' : 'Move to Under Review?' }}</h3>
+            <h3 class="text-xl font-bold text-gray-900">
+              {{
+                pendingStatus === "Approved"
+                  ? "Approve this idea?"
+                  : "Move to Under Review?"
+              }}
+            </h3>
             <p class="text-gray-600 leading-relaxed">
               {{
-                pendingStatus === 'Approved'
-                  ? 'This will approve the idea and record you as the reviewer.'
-                  : 'This will mark the idea as under review. You can update the status again after evaluating feedback.'
+                pendingStatus === "Approved"
+                  ? "This will approve the idea and record you as the reviewer."
+                  : "This will mark the idea as under review. You can update the status again after evaluating feedback."
               }}
             </p>
           </div>
@@ -454,17 +716,24 @@
             [disabled]="isChangingStatus"
             class="px-5 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-all disabled:opacity-60"
           >
-            {{ isChangingStatus ? 'Updating...' : (pendingStatus === 'Approved' ? 'Approve' : 'Confirm') }}
+            {{
+              isChangingStatus
+                ? "Updating..."
+                : pendingStatus === "Approved"
+                  ? "Approve"
+                  : "Confirm"
+            }}
           </button>
         </div>
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- Toasts -->
-<div class="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center px-4 space-y-2 pointer-events-none">
+<div
+  class="fixed inset-x-0 bottom-6 z-50 flex flex-col items-center px-4 space-y-2 pointer-events-none"
+>
   <div
     *ngIf="successMessage"
     class="pointer-events-auto rounded-lg bg-linear-to-r from-emerald-500 to-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-xl"
